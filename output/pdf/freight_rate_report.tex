@@ -22,7 +22,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\sffamily\color{muted}Spotter | Freight Rate Assessment}
-\fancyhead[R]{\small\sffamily\color{muted}Assessment walkthrough}
+\fancyhead[R]{\small\sffamily\color{muted}Technical report}
 \fancyfoot[L]{\small\color{muted}Results snapshot: 14 October 2026}
 \fancyfoot[R]{\small\thepage}
 \renewcommand{\headrulewidth}{.3pt}
@@ -30,30 +30,36 @@
 \newcommand{\code}[1]{\nolinkurl{#1}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \lstset{basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{light},frame=none,breaklines=true,columns=fullflexible,keepspaces=true,xleftmargin=6pt,xrightmargin=6pt}
-\hypersetup{pdftitle={Freight Rate Prediction: Assessment Walkthrough},pdfauthor={},pdfsubject={Spotter machine learning assessment}}
+\hypersetup{pdftitle={Freight Rate Prediction: Technical Report},pdfauthor={},pdfsubject={Spotter machine learning assessment}}
 \begin{document}
 {\Huge\sffamily\color{navy}Freight Rate Prediction}\par
-{\Large\sffamily Assessment walkthrough}\par
-{\color{muted}Asgat | Spotter | 15 October 2026}
+{\Large\sffamily Technical report}\par
+{\color{muted}Asgat | Spotter assessment | 15 October 2026}
 \vspace{12pt}
-\section*{The task}
-Predict freight rates for deliveries within the US. Deliver predictions for 12,000 validation loads and a December price curve for a fixed Lexington--Fort Wayne load.
-\subsection*{How I approach the problem}
-Explore the data, ask questions and document assumptions. Look for missing signals. Set up chronological validation. Compare a simple baseline with a tuned model, then investigate the errors.
-\subsection*{Walkthrough order}
-\begin{enumerate}
-\item Target and feature distributions.
-\item New cities, the daily-load jump and coordinate quality.
-\item Road features and market-index decomposition.
-\item Time-series validation, baseline and CatBoost results.
-\item Large errors and model explanations.
-\item December input reconstruction and predictions.
-\end{enumerate}
-\subsection*{Data}
-48,000 labeled loads cover January--October 2025. The 12,000 supplied validation loads cover November--December and have no price targets. The fixed December scenario contains 31 daily predictions.
+\section*{Objective}
+Predict freight rates for individual deliveries within the US using route, equipment, weight, date and market inputs. The required outputs are predictions for 12,000 unlabeled validation loads and a 31-day December price curve for a fixed Lexington--Fort Wayne load.
+\subsection*{Data and evaluation}
+The labeled dataset contains 48,000 loads from January through October 2025. Supplied validation covers November--December. Model selection uses three expanding temporal folds; the final 14 labeled days form a separate 2,183-row internal test.
 
-The main pages follow the spoken walkthrough. Detailed category distributions, temporal signal panels, parameter tables, error comparisons and fold explanations are retained in the appendix.
+The selected model is CatBoost trained on $\ln(\text{posted rate})$, using 52 predictors. Hyperparameters are optimized with Optuna against weighted CV MAPE, with fold weights 0.2, 0.3 and 0.5. The submission model is refitted on all labeled rows with 285 trees.
+\subsection*{Main results}
+\begin{center}
+\begin{tabularx}{\linewidth}{Yrr}
+\toprule Evaluation & Quote $\times$ distance & CatBoost \\
+\midrule Weighted CV MAPE & 12.78\% & 5.1119\% \\
+October test MAPE & 21.028\% & 5.5562\% \\
+October test MAE & 411.32 & 115.65 \\
+October test RMSE & 838.65 & 706.52 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+Most test loads are predicted closely. The 38 loads with APE above 50\% represent 1.74\% of the test and contribute 61.24\% of summed percentage errors. All test rows remain included in the reported metrics.
+\subsection*{Deliverables}
+The saved model, preprocessing state, validation predictions and reconstructed December predictions form a reproducible inference pipeline. Both prediction files pass the assessment scorer's structural checks. December point predictions range from 813.95 to 844.65, conditional on reconstructed market and quote inputs.
+\subsection*{Scope and limitations}
+Validation targets are unavailable. The internal test was reserved retrospectively and is not a pristine external benchmark. The shared market curve uses known future market inputs without price targets. The December interval approximates model error and excludes uncertainty from input reconstruction.
 
+The report presents data quality, geographic and temporal analysis, feature engineering, validation, model performance, error analysis and inference. Supporting distributions, parameter tables and fold explanations are provided in the appendix.
 
 \newpage
 \section{Start with the target and data quality}
@@ -351,7 +357,7 @@ pdflatex -interaction=nonstopmode freight_rate_report.tex
 \end{lstlisting}
 Use a notebook-capable environment; the verified runtime includes Jupyter/nbclient. Native-model reload checks preserve predictions. Saved versions: CatBoost 1.2.10, NumPy 2.1.3, pandas 2.3.3, scikit-learn 1.8.0. Evidence JSON includes source-artifact SHA-256 hashes.
 
-The scorer checks file contracts, not hidden validation accuracy. CV reuses selection windows; the holdout is retrospective; future market covariates are used; December inputs are reconstructed. These limits accompany the scores. The repository contains the report and reproducible artifacts; the Loom walkthrough follows the main report pages.
+The scorer checks file contracts, not hidden validation accuracy. CV reuses selection windows; the holdout is retrospective; future market covariates are used; December inputs are reconstructed. These limits accompany the scores. The repository contains the report and reproducible artifacts; the main report presents the modeling and inference methodology.
 
 \newpage
 \section{Fold 1: held-out SHAP values}
