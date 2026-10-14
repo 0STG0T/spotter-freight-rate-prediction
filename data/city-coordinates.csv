@@ -1,0 +1,73 @@
+city,latitude,longitude,state,geoname_id,geoname_name,source
+Albany,42.65258,-73.75623,NY,5106834,Albany,https://download.geonames.org/export/dump/cities15000.zip
+Albuquerque,35.08449,-106.65114,NM,5454711,Albuquerque,https://download.geonames.org/export/dump/cities15000.zip
+Allentown,40.60843,-75.49018,PA,5178127,Allentown,https://download.geonames.org/export/dump/cities15000.zip
+Amarillo,35.222,-101.8313,TX,5516233,Amarillo,https://download.geonames.org/export/dump/cities15000.zip
+Atlanta,33.749,-84.38798,GA,4180439,Atlanta,https://download.geonames.org/export/dump/cities15000.zip
+Austin,30.26715,-97.74306,TX,4671654,Austin,https://download.geonames.org/export/dump/cities15000.zip
+Bakersfield,35.37329,-119.01871,CA,5325738,Bakersfield,https://download.geonames.org/export/dump/cities15000.zip
+Baltimore,39.29038,-76.61219,MD,4347778,Baltimore,https://download.geonames.org/export/dump/cities15000.zip
+Baton Rouge,30.44332,-91.18747,LA,4315588,Baton Rouge,https://download.geonames.org/export/dump/cities15000.zip
+Birmingham,33.52066,-86.80249,AL,4049979,Birmingham,https://download.geonames.org/export/dump/cities15000.zip
+Boston,42.35843,-71.05977,MA,4930956,Boston,https://download.geonames.org/export/dump/cities15000.zip
+Buffalo,42.88645,-78.87837,NY,5110629,Buffalo,https://download.geonames.org/export/dump/cities15000.zip
+Charleston,32.77632,-79.93275,SC,4574324,Charleston,https://download.geonames.org/export/dump/cities15000.zip
+Charlotte,35.22709,-80.84313,NC,4460243,Charlotte,https://download.geonames.org/export/dump/cities15000.zip
+Chattanooga,35.04563,-85.30968,TN,4612862,Chattanooga,https://download.geonames.org/export/dump/cities15000.zip
+Chicago,41.85003,-87.65005,IL,4887398,Chicago,https://download.geonames.org/export/dump/cities15000.zip
+Cincinnati,39.12711,-84.51439,OH,4508722,Cincinnati,https://download.geonames.org/export/dump/cities15000.zip
+Columbia,34.00071,-81.03481,SC,4575352,Columbia,https://download.geonames.org/export/dump/cities15000.zip
+Corpus Christi,27.80058,-97.39638,TX,4683416,Corpus Christi,https://download.geonames.org/export/dump/cities15000.zip
+Dallas,32.78306,-96.80667,TX,4684888,Dallas,https://download.geonames.org/export/dump/cities15000.zip
+Dayton,39.75895,-84.19161,OH,4509884,Dayton,https://download.geonames.org/export/dump/cities15000.zip
+Detroit,42.33143,-83.04575,MI,4990729,Detroit,https://download.geonames.org/export/dump/cities15000.zip
+El Paso,31.75872,-106.48693,TX,5520993,El Paso,https://download.geonames.org/export/dump/cities15000.zip
+Fort Wayne,41.1306,-85.12886,IN,4920423,Fort Wayne,https://download.geonames.org/export/dump/cities15000.zip
+Fresno,36.74773,-119.77237,CA,5350937,Fresno,https://download.geonames.org/export/dump/cities15000.zip
+Grand Rapids,42.96336,-85.66809,MI,4994358,Grand Rapids,https://download.geonames.org/export/dump/cities15000.zip
+Green Bay,44.51916,-88.01983,WI,5254962,Green Bay,https://download.geonames.org/export/dump/cities15000.zip
+Greensboro,36.07264,-79.79198,NC,4469146,Greensboro,https://download.geonames.org/export/dump/cities15000.zip
+Harrisburg,40.2737,-76.88442,PA,5192726,Harrisburg,https://download.geonames.org/export/dump/cities15000.zip
+Hartford,41.76371,-72.68509,CT,4835797,Hartford,https://download.geonames.org/export/dump/cities15000.zip
+Houston,29.76328,-95.36327,TX,4699066,Houston,https://download.geonames.org/export/dump/cities15000.zip
+Indianapolis,39.76838,-86.15804,IN,4259418,Indianapolis,https://download.geonames.org/export/dump/cities15000.zip
+Jackson,32.29876,-90.18481,MS,4431410,Jackson,https://download.geonames.org/export/dump/cities15000.zip
+Jacksonville,30.33218,-81.65565,FL,4160021,Jacksonville,https://download.geonames.org/export/dump/cities15000.zip
+Kansas City,39.09973,-94.57857,MO,4393217,Kansas City,https://download.geonames.org/export/dump/cities15000.zip
+Knoxville,35.96064,-83.92074,TN,4634946,Knoxville,https://download.geonames.org/export/dump/cities15000.zip
+Laredo,27.50641,-99.50754,TX,4705349,Laredo,https://download.geonames.org/export/dump/cities15000.zip
+Las Vegas,36.17497,-115.13722,NV,5506956,Las Vegas,https://download.geonames.org/export/dump/cities15000.zip
+Lexington,37.98869,-84.47772,KY,4297983,Lexington,https://download.geonames.org/export/dump/cities15000.zip
+Little Rock,34.74648,-92.28959,AR,4119403,Little Rock,https://download.geonames.org/export/dump/cities15000.zip
+Los Angeles,34.05223,-118.24368,CA,5368361,Los Angeles,https://download.geonames.org/export/dump/cities15000.zip
+Louisville,38.25424,-85.75941,KY,4299276,Louisville,https://download.geonames.org/export/dump/cities15000.zip
+Lubbock,33.57786,-101.85517,TX,5525577,Lubbock,https://download.geonames.org/export/dump/cities15000.zip
+Madison,43.07305,-89.40123,WI,5261457,Madison,https://download.geonames.org/export/dump/cities15000.zip
+Memphis,35.14953,-90.04898,TN,4641239,Memphis,https://download.geonames.org/export/dump/cities15000.zip
+Milwaukee,43.0389,-87.90647,WI,5263045,Milwaukee,https://download.geonames.org/export/dump/cities15000.zip
+Mobile,30.69436,-88.04305,AL,4076598,Mobile,https://download.geonames.org/export/dump/cities15000.zip
+Montgomery,32.36681,-86.29997,AL,4076784,Montgomery,https://download.geonames.org/export/dump/cities15000.zip
+Nashville,36.16589,-86.78444,TN,4644585,Nashville,https://download.geonames.org/export/dump/cities15000.zip
+New Orleans,29.95465,-90.07507,LA,4335045,New Orleans,https://download.geonames.org/export/dump/cities15000.zip
+New York,40.71427,-74.00597,NY,5128581,New York City,https://download.geonames.org/export/dump/cities15000.zip
+Norfolk,36.84681,-76.28522,VA,4776222,Norfolk,https://download.geonames.org/export/dump/cities15000.zip
+Oklahoma City,35.46756,-97.51643,OK,4544349,Oklahoma City,https://download.geonames.org/export/dump/cities15000.zip
+Philadelphia,39.95238,-75.16362,PA,4560349,Philadelphia,https://download.geonames.org/export/dump/cities15000.zip
+Phoenix,33.44838,-112.07404,AZ,5308655,Phoenix,https://download.geonames.org/export/dump/cities15000.zip
+Providence,41.82399,-71.41283,RI,5224151,Providence,https://download.geonames.org/export/dump/cities15000.zip
+Raleigh,35.7721,-78.63861,NC,4487042,Raleigh,https://download.geonames.org/export/dump/cities15000.zip
+Reno,39.52963,-119.8138,NV,5511077,Reno,https://download.geonames.org/export/dump/cities15000.zip
+Richmond,37.55376,-77.46026,VA,4781708,Richmond,https://download.geonames.org/export/dump/cities15000.zip
+Salt Lake City,40.76078,-111.89105,UT,5780993,Salt Lake City,https://download.geonames.org/export/dump/cities15000.zip
+San Antonio,29.42412,-98.49363,TX,4726206,San Antonio,https://download.geonames.org/export/dump/cities15000.zip
+San Diego,32.71571,-117.16472,CA,5391811,San Diego,https://download.geonames.org/export/dump/cities15000.zip
+San Francisco,37.77493,-122.41942,CA,5391959,San Francisco,https://download.geonames.org/export/dump/cities15000.zip
+Savannah,32.08354,-81.09983,GA,4221552,Savannah,https://download.geonames.org/export/dump/cities15000.zip
+Shreveport,32.52515,-93.75018,LA,4341513,Shreveport,https://download.geonames.org/export/dump/cities15000.zip
+St. Louis,38.62727,-90.19789,MO,4407066,St. Louis,https://download.geonames.org/export/dump/cities15000.zip
+Syracuse,43.04812,-76.14742,NY,5140405,Syracuse,https://download.geonames.org/export/dump/cities15000.zip
+Tampa,27.94752,-82.45843,FL,4174757,Tampa,https://download.geonames.org/export/dump/cities15000.zip
+Toledo,41.66394,-83.55521,OH,5174035,Toledo,https://download.geonames.org/export/dump/cities15000.zip
+Tucson,32.22174,-110.92648,AZ,5318313,Tucson,https://download.geonames.org/export/dump/cities15000.zip
+Tulsa,36.15398,-95.99277,OK,4553433,Tulsa,https://download.geonames.org/export/dump/cities15000.zip
+Washington,38.89511,-77.03637,DC,4140963,Washington,https://download.geonames.org/export/dump/cities15000.zip

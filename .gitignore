@@ -1,0 +1,55 @@
+# Local environments and editor files
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.vscode/
+.DS_Store
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Original assessment data and superseded preparation outputs
+/data/train-test.csv
+/data/validation.csv
+/data/validation-predictions-template.csv
+/data/december-chart-inputs.csv
+/data/prepared/
+
+# Keep only the current HERE routing snapshot
+/data/route_cache/*
+!/data/route_cache/here_dade4126f570071fc357/
+!/data/route_cache/here_dade4126f570071fc357/**
+!/data/route_cache/here_shape_b687cb8afb63be1eecd8.json
+!/data/route_cache/here_shape_e470870101d8804ecd2c.json
+!/data/route_cache/here_shape_b4196815d70be387cfd9.json
+
+# Temporary diagnostics, obsolete experiments and compiler outputs
+/tmp/
+*.log
+*.aux
+*.out
+*.synctex.gz
+*.sqlite-wal
+*.sqlite-shm
+*.tmp
+/outputs/distance-quantization-cv.csv
+/outputs/catboost-feature-importance.png
+/output/pdf/figures/*.png
+!/output/pdf/figures/time-series-cv.png
+!/output/pdf/figures/catboost-cv-metrics.png
+!/output/pdf/figures/test-quote-product-baseline.png
+!/output/pdf/figures/test-residuals.png
+!/output/pdf/figures/test-outlier-comparison.png
+!/output/pdf/figures/shap-validation.png
+!/output/pdf/figures/test-worst-five-shap.png
+!/output/pdf/figures/december-quote-signal-fit.png
+!/output/pdf/figures/december-market-index-fit.png
+!/output/pdf/figures/december-predictions-interval.png
+!/output/pdf/figures/shap-fold_1.png
+!/output/pdf/figures/shap-fold_2.png
+!/output/pdf/figures/shap-fold_3.png
+!/output/pdf/figures/inference-predictions.png
+!/output/pdf/figures/candidate_december.png

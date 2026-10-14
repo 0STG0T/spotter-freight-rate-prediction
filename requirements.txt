@@ -1,0 +1,14 @@
+matplotlib>=3.8,<4
+numpy>=1.26,<3
+pandas>=2.0,<3
+plotly>=5,<7
+shapely>=2,<3
+pyproj>=3.6,<4
+pyshp>=2.3,<3
+flexpolyline>=0.1,<1
+scikit-learn>=1.3,<2
+catboost>=1.2.8,<2
+optuna>=4.6,<5
+jupyter>=1,<2
+nbclient>=0.10,<1
+nbformat>=5.10,<6

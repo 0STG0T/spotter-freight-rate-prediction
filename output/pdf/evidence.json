@@ -1,0 +1,376 @@
+{
+  "model_metadata": {
+    "target": "posted_rate",
+    "target_transform": "log",
+    "prediction_transform": "exp",
+    "training_start": "2025-01-01",
+    "training_end": "2025-10-31",
+    "training_rows": 48000,
+    "iterations": 285,
+    "study_name": "holdout14-weighted-mape-d68b84552ce7b2aa",
+    "best_trial": 41,
+    "weighted_cv_mape_pct": 5.111889556255373,
+    "test_metrics": {
+      "rows": 2183.0,
+      "MAE": 115.64762489433033,
+      "RMSE": 706.5174627633222,
+      "MAPE_pct": 5.556215638950306,
+      "Median_APE_pct": 1.8967362361832696,
+      "P90_APE_pct": 4.624480914174722,
+      "Within_10pct_pct": 97.93861658268438
+    },
+    "interval_calibration": {
+      "method": "held-out empirical actual/predicted quantiles",
+      "nominal_coverage": 0.9,
+      "lower_multiplier": 0.9597347925754496,
+      "upper_multiplier": 1.051664317917968,
+      "calibration_rows": 2183,
+      "empirical_calibration_coverage": 0.8992212551534585,
+      "scope": "Transferred model-error band; reconstructed-input uncertainty is excluded",
+      "calibration_start": "2025-10-18",
+      "calibration_end": "2025-10-31"
+    },
+    "golden_features": [
+      "distance"
+    ],
+    "golden_borders": {
+      "distance": 254
+    },
+    "here_snapshot": "2026-10-12-city-routing-v2",
+    "market_fit_scope": "Known train + validation market_index inputs; no rate targets",
+    "feature_columns": [
+      "pickup",
+      "delivery",
+      "pickup_lat",
+      "pickup_lon",
+      "delivery_lat",
+      "delivery_lon",
+      "distance",
+      "equipment",
+      "weight",
+      "market_index",
+      "quote_signal",
+      "dow_sin",
+      "dow_cos",
+      "dom_sin",
+      "dom_cos",
+      "year_sin",
+      "year_cos",
+      "is_weekend",
+      "road_distance_miles",
+      "driving_time_hours",
+      "road_to_air_ratio",
+      "input_to_road_ratio",
+      "route_available",
+      "market_coef_intercept",
+      "market_coef_linear",
+      "market_coef_quadratic",
+      "market_coef_weekly_sin",
+      "market_coef_weekly_cos",
+      "market_curve_trend",
+      "market_weekly_component",
+      "market_curve_expected",
+      "market_trend_slope",
+      "market_trend_curvature",
+      "market_curve_residual",
+      "market_observed",
+      "market_relative_residual",
+      "market_residual_percentile",
+      "market_equipment_residual_z",
+      "market_lane_residual_z",
+      "is_us_holiday",
+      "is_us_observed_holiday",
+      "days_to_us_holiday",
+      "days_since_us_holiday",
+      "is_before_us_holiday_3d",
+      "is_after_us_holiday_3d",
+      "is_near_us_holiday_7d",
+      "agg_pickup_share",
+      "agg_delivery_share",
+      "agg_pickup_balance",
+      "agg_delivery_balance",
+      "agg_pickup_diversity",
+      "agg_delivery_diversity"
+    ],
+    "cat_features": [
+      "pickup",
+      "delivery",
+      "equipment"
+    ],
+    "model_file": "model.cbm",
+    "preprocessing_file": "preprocessing.pkl",
+    "model_params": {
+      "nan_mode": "Min",
+      "eval_metric": "RMSE",
+      "combinations_ctr": [
+        "Borders:CtrBorderCount=15:CtrBorderType=Uniform:TargetBorderCount=1:TargetBorderType=MinEntropy:Prior=0/1:Prior=0.5/1:Prior=1/1",
+        "Counter:CtrBorderCount=15:CtrBorderType=Uniform:Prior=0/1"
+      ],
+      "iterations": 285,
+      "sampling_frequency": "PerTree",
+      "fold_permutation_block": 0,
+      "leaf_estimation_method": "Newton",
+      "random_score_type": "NormalWithModelSizeDecrease",
+      "counter_calc_method": "SkipTest",
+      "grow_policy": "SymmetricTree",
+      "penalties_coefficient": 1,
+      "boosting_type": "Plain",
+      "model_shrink_mode": "Constant",
+      "feature_border_type": "GreedyLogSum",
+      "ctr_leaf_count_limit": 18446744073709551615,
+      "bayesian_matrix_reg": 0.10000000149011612,
+      "one_hot_max_size": 2,
+      "eval_fraction": 0,
+      "force_unit_auto_pair_weights": false,
+      "l2_leaf_reg": 2.289085865020752,
+      "random_strength": 1.1686224937438965,
+      "rsm": 0.9770594835281372,
+      "boost_from_average": true,
+      "max_ctr_complexity": 4,
+      "model_size_reg": 0.5,
+      "simple_ctr": [
+        "Borders:CtrBorderCount=15:CtrBorderType=Uniform:TargetBorderCount=1:TargetBorderType=MinEntropy:Prior=0/1:Prior=0.5/1:Prior=1/1",
+        "Counter:CtrBorderCount=15:CtrBorderType=Uniform:Prior=0/1"
+      ],
+      "pool_metainfo_options": {
+        "tags": {}
+      },
+      "subsample": 0.800000011920929,
+      "use_best_model": false,
+      "random_seed": 42,
+      "depth": 6,
+      "ctr_target_border_count": 1,
+      "posterior_sampling": false,
+      "has_time": false,
+      "store_all_simple_ctr": false,
+      "border_count": 254,
+      "classes_count": 0,
+      "auto_class_weights": "None",
+      "sparse_features_conflict_fraction": 0,
+      "leaf_estimation_backtracking": "AnyImprovement",
+      "best_model_min_trees": 1,
+      "model_shrink_rate": 0,
+      "min_data_in_leaf": 1,
+      "loss_function": "RMSE",
+      "learning_rate": 0.05697034299373627,
+      "per_float_feature_quantization": [
+        "6:border_count=254,dev_max_subset_size_for_build_borders=,nan_mode=Min,border_type=GreedyLogSum"
+      ],
+      "score_function": "Cosine",
+      "task_type": "CPU",
+      "leaf_estimation_iterations": 1,
+      "bootstrap_type": "MVS",
+      "max_leaves": 64,
+      "permutation_count": 4
+    },
+    "versions": {
+      "catboost": "1.2.10",
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0"
+    }
+  },
+  "missing": {
+    "train": {
+      "weight_missing": 300,
+      "weight_nonpositive": 292,
+      "market_missing": 374,
+      "date_min": "2025-01-01",
+      "date_max": "2025-10-31"
+    },
+    "validation": {
+      "weight_missing": 165,
+      "weight_nonpositive": 145,
+      "market_missing": 249,
+      "date_min": "2025-11-01",
+      "date_max": "2025-12-31"
+    }
+  },
+  "new_cities": [
+    "Allentown",
+    "Charlotte",
+    "Chicago",
+    "Jackson",
+    "Knoxville",
+    "Laredo",
+    "Norfolk",
+    "San Diego"
+  ],
+  "daily_counts": {
+    "train": 157.89473684210526,
+    "validation": 196.72131147540983,
+    "validation_known": 173.0,
+    "known_validation_rows": 10553
+  },
+  "boundary_audit": {
+    "cities": 72,
+    "inside": 2,
+    "outside_gt100": 52
+  },
+  "market_rmse": 0.002587594969089928,
+  "cv_metrics": [
+    {
+      "fold": 1,
+      "iterations": 218,
+      "MAE": 133.387,
+      "RMSE": 566.842,
+      "MAPE_pct": 6.2
+    },
+    {
+      "fold": 2,
+      "iterations": 285,
+      "MAE": 127.4,
+      "RMSE": 658.064,
+      "MAPE_pct": 5.006
+    },
+    {
+      "fold": 3,
+      "iterations": 427,
+      "MAE": 108.474,
+      "RMSE": 614.069,
+      "MAPE_pct": 4.74
+    }
+  ],
+  "baseline_metrics": [
+    {
+      "split": "Fold 1",
+      "model": "CatBoost",
+      "MAE": 133.387,
+      "RMSE": 566.842,
+      "MAPE_pct": 6.2
+    },
+    {
+      "split": "Fold 1",
+      "model": "Quote \u00d7 distance",
+      "MAE": 323.25,
+      "RMSE": 696.303,
+      "MAPE_pct": 16.298
+    },
+    {
+      "split": "Fold 2",
+      "model": "CatBoost",
+      "MAE": 127.4,
+      "RMSE": 658.064,
+      "MAPE_pct": 5.006
+    },
+    {
+      "split": "Fold 2",
+      "model": "Quote \u00d7 distance",
+      "MAE": 268.881,
+      "RMSE": 740.244,
+      "MAPE_pct": 12.881
+    },
+    {
+      "split": "Fold 3",
+      "model": "CatBoost",
+      "MAE": 108.474,
+      "RMSE": 614.069,
+      "MAPE_pct": 4.74
+    },
+    {
+      "split": "Fold 3",
+      "model": "Quote \u00d7 distance",
+      "MAE": 239.234,
+      "RMSE": 685.905,
+      "MAPE_pct": 11.31
+    },
+    {
+      "split": "Test",
+      "model": "CatBoost",
+      "MAE": 115.648,
+      "RMSE": 706.517,
+      "MAPE_pct": 5.556
+    },
+    {
+      "split": "Test",
+      "model": "Quote \u00d7 distance",
+      "MAE": 411.32,
+      "RMSE": 838.653,
+      "MAPE_pct": 21.028
+    }
+  ],
+  "distance_border_scores": {
+    "254": 5.111889556255373,
+    "512": 5.281907797723317,
+    "1024": 5.252175137140169,
+    "2048": 5.317119592955326
+  },
+  "feature_importance": {
+    "distance": 83.82623773422601,
+    "driving_time_hours": 7.246756254684341,
+    "road_distance_miles": 2.5143189699545427,
+    "equipment": 2.4769003739080637,
+    "weight": 0.6867267306842563,
+    "input_to_road_ratio": 0.5814265893608828,
+    "delivery_lat": 0.23032135765616757,
+    "pickup_lat": 0.22611157841621515,
+    "delivery_lon": 0.18923892868364126,
+    "road_to_air_ratio": 0.1774157769706106,
+    "quote_signal": 0.17257014319446803,
+    "year_cos": 0.1712028180677418,
+    "pickup_lon": 0.1460678845820843,
+    "market_curve_expected": 0.14242472468688225,
+    "market_trend_slope": 0.10636763476839697,
+    "agg_delivery_diversity": 0.09471301665321627,
+    "market_index": 0.08461073561651866,
+    "agg_pickup_diversity": 0.07501961541369911,
+    "market_trend_curvature": 0.06377186221379269,
+    "year_sin": 0.06004720073971445,
+    "market_coef_intercept": 0.057105214714071234,
+    "market_weekly_component": 0.054868042416349364,
+    "market_coef_weekly_cos": 0.05455411109521789,
+    "delivery": 0.05372287577153791,
+    "market_coef_quadratic": 0.052371299751329564,
+    "agg_pickup_share": 0.04959208203396557,
+    "market_coef_weekly_sin": 0.04278152334059374,
+    "pickup": 0.042460884942810286,
+    "dom_sin": 0.04076986470546772,
+    "market_coef_linear": 0.029386269137834785,
+    "agg_delivery_balance": 0.028846591625785907,
+    "market_curve_trend": 0.02767263855394648,
+    "agg_pickup_balance": 0.025782300231858176,
+    "agg_delivery_share": 0.02498141753062774,
+    "dow_sin": 0.017537741192097896,
+    "market_relative_residual": 0.017005871640715042,
+    "market_residual_percentile": 0.014802114652464669,
+    "days_to_us_holiday": 0.013792321614356142,
+    "market_curve_residual": 0.013683013757810496,
+    "market_lane_residual_z": 0.013071743622850239,
+    "dow_cos": 0.012113933601374008,
+    "days_since_us_holiday": 0.011647586815417244,
+    "dom_cos": 0.010504359026323278,
+    "market_equipment_residual_z": 0.00792638840224191,
+    "is_weekend": 0.005490634278792403,
+    "market_observed": 0.003675831486227231,
+    "is_before_us_holiday_3d": 0.0016034135767559203,
+    "is_near_us_holiday_7d": 0.0,
+    "is_after_us_holiday_3d": 0.0,
+    "is_us_observed_holiday": 0.0,
+    "route_available": 0.0,
+    "is_us_holiday": 0.0
+  },
+  "quote_fit": {
+    "origin": "2025-12-01",
+    "intercept": 1.8590061538461549,
+    "slope_per_day": 0.024599423076923078,
+    "observed_points": 3,
+    "filled_points": 28
+  },
+  "market_shift": {
+    "vertical_shift": -0.006200058871317878,
+    "observed_points": 3,
+    "filled_points": 28,
+    "observed_fit_rmse": 0.019103137724017026
+  },
+  "december_rates": {
+    "min": 813.9537268794228,
+    "max": 844.6487139678882,
+    "mean": 825.1161931035423
+  },
+  "artifact_sha256": {
+    "outputs/final-model/model.cbm": "45507f166d34dd120fad9e1cadc01935afe2d98a18bfc37f4a81888f8312c332",
+    "outputs/final-model/preprocessing.pkl": "5c7d5f321c9bf5852b59798c9f3e801837fbfda526d8c9a07bd034da195d0e5f",
+    "outputs/validation-predictions.csv": "21a218c71b80fd851c3d018b3ebfd8adcb56f08fcfd1eb09374863d939fa9d97",
+    "outputs/december-predictions.csv": "5d9adec30f7b0ee6d6cac3641d6aa55b0a7b9490b94a87e5728fcab68131a6cb"
+  }
+}

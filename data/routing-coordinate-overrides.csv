@@ -1,0 +1,2 @@
+city,lat,lon,source,reason
+Washington,38.89037,-77.03196,"HERE Geocoding v1; query: Washington, DC, USA",GeoNames center returned HERE matrix error 3; locality point verified with truckFast routing
