@@ -22,7 +22,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\sffamily\color{muted}Spotter | Freight Rate Assessment}
-\fancyhead[R]{\small\sffamily\color{muted}Technical report}
+\fancyhead[R]{\small\sffamily\color{muted}Assessment walkthrough}
 \fancyfoot[L]{\small\color{muted}Results snapshot: 14 October 2026}
 \fancyfoot[R]{\small\thepage}
 \renewcommand{\headrulewidth}{.3pt}
@@ -30,42 +30,33 @@
 \newcommand{\code}[1]{\nolinkurl{#1}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \lstset{basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{light},frame=none,breaklines=true,columns=fullflexible,keepspaces=true,xleftmargin=6pt,xrightmargin=6pt}
-\hypersetup{pdftitle={Freight Rate Prediction: Data, Validation and Inference},pdfauthor={},pdfsubject={Spotter machine learning assessment}}
+\hypersetup{pdftitle={Freight Rate Prediction: Assessment Walkthrough},pdfauthor={},pdfsubject={Spotter machine learning assessment}}
 \begin{document}
 {\Huge\sffamily\color{navy}Freight Rate Prediction}\par
-{\Large\sffamily Data, validation and inference}\par
-{\color{muted}Spotter technical assessment | 14 October 2026}
+{\Large\sffamily Assessment walkthrough}\par
+{\color{muted}Asgat | Spotter | 15 October 2026}
 \vspace{12pt}
-\section*{Assessment objective and result}
-Predict a single freight load's \code{posted_rate} from route, distance, equipment, weight, date and supplied market signals. Deliver predictions for 12,000 unlabeled validation loads and a 31-day December price curve for a fixed Lexington--Fort Wayne load.
+\section*{The task}
+Predict freight rates for deliveries within the US. Deliver predictions for 12,000 validation loads and a December price curve for a fixed Lexington--Fort Wayne load.
+\subsection*{How I approach the problem}
+Explore the data, ask questions and document assumptions. Look for missing signals. Set up chronological validation. Compare a simple baseline with a tuned model, then investigate the errors.
+\subsection*{Walkthrough order}
+\begin{enumerate}
+\item Target and feature distributions.
+\item New cities, the daily-load jump and coordinate quality.
+\item Road features and market-index decomposition.
+\item Time-series validation, baseline and CatBoost results.
+\item Large errors and model explanations.
+\item December input reconstruction and predictions.
+\end{enumerate}
+\subsection*{Data}
+48,000 labeled loads cover January--October 2025. The 12,000 supplied validation loads cover November--December and have no price targets. The fixed December scenario contains 31 daily predictions.
 
-The selected model is CatBoost trained on $\ln(\text{posted\_rate})$, with predictions returned to rate units by $\exp(\cdot)$. The final model uses 52 predictors and 285 trees. Both required CSV files pass the assessment scorer's structural checks.
-\begin{center}
-\par\noindent\begin{tabularx}{\linewidth}{Yrr}
-\toprule Evaluation & CatBoost & Quote $\times$ distance \\
-\midrule Weighted 3-fold CV MAPE & 5.1119\% & 12.78\% \\
-October 18--31 test MAPE & 5.5562\% & 21.028\% \\
-October test MAE & 115.65 & 411.32 \\
-October test RMSE & 706.52 & 838.65 \\
-\bottomrule
-\end{tabularx}\par
-\end{center}
-Most test loads are predicted closely, while a small group of unusually priced loads dominates aggregate MAPE. No price outliers are removed. December predictions range from 813.95 to 844.65 rate units, conditional on reconstructed market and quote inputs.
-\subsection*{Files and prediction periods}
-\par\noindent\begin{tabularx}{\linewidth}{YrrY}
-\toprule Input & Rows & Target & Period / purpose \\
-\midrule \code{train-test.csv} & 48,000 & Known & Jan 1--Oct 31, 2025 \\
-\code{validation.csv} & 12,000 & Hidden & Nov 1--Dec 31, 2025 \\
-\code{december-chart-inputs.csv} & 31 & Predict & Fixed load, Dec 1--31, 2025 \\
-\bottomrule
-\end{tabularx}\par
-\subsection*{Report sequence}
-Inspect data quality and distribution changes; define geographic and market features; validate chronologically; optimize and explain the model; examine errors; reconstruct December inputs; and generate final files. Fold SHAP plots and validation inference diagnostics appear in the appendix.
-\subsection*{Interpretation boundaries}
-Validation targets are hidden, so their accuracy cannot be measured locally. The internal test was reserved retrospectively and is not a pristine external benchmark. The market curve uses known future input values without price targets. December inputs are estimates, and the uncertainty band excludes reconstruction uncertainty.
+The main pages follow the spoken walkthrough. Detailed category distributions, temporal signal panels, parameter tables, error comparisons and fold explanations are retained in the appendix.
+
 
 \newpage
-\section{Data quality before modeling}
+\section{Start with the target and data quality}
 \fig{figures/target_distributions.pdf}{.25\textheight}{The same 48,000 training targets before and after the natural logarithm. No values are clipped or removed. Validation targets are unavailable.}
 The training target spans 57.22--25,533.00 USD, with median 2,030.76. The long right tail motivates modeling $\ln(\text{posted rate})$; predictions are mapped back with the exponential. Log transformation compresses the scale without deleting extreme prices.
 
@@ -81,37 +72,26 @@ Duplicate load IDs & 0 & 0 \\
 \end{tabularx}\par
 \end{center}
 Nonpositive weights become missing. Weight and market medians fit only the corresponding training partition, including within CV folds. Cleaning preserves row order, IDs and supplied coordinate fields. No target outliers are deleted.
+
 \newpage
-\subsection*{All original numerical predictors}
+\section{Compare training and validation distributions}
 \fig{figures/eda_distributions.pdf}{.77\textheight}{All eight raw numerical predictors, with common bins and independently normalized distributions for train and validation. Missing values are excluded from histograms and reported in the preceding audit; nonpositive weights remain visible before cleaning.}
 Distance medians are 953.3 versus 953.6 miles; quote medians are 2.056 versus 2.051. Mean market index changes from 1.083 in train to 0.927 in validation.
 
 \newpage
-\subsection*{Equipment and date}
-\fig{figures/equipment_date_distributions.pdf}{.60\textheight}{All equipment categories and the monthly date distribution. Percentages use each dataset's own row count. Dates show the chronological split, not a random partition.}
-The following pages show every pickup and delivery category, including validation-only cities. Together these plots cover all original predictors. \code{load_id} is a unique identifier and is excluded from modeling; its uniqueness is checked in the data-quality audit. Engineered features are discussed later.
-
-\newpage
-\subsection*{Pickup city distribution}
-\fig{figures/pickup_distributions.pdf}{.80\textheight}{All pickup cities, ordered by pooled train and validation frequency. Each dataset is normalized separately; a missing bar denotes zero observations.}
-
-\newpage
-\subsection*{Delivery city distribution}
-\fig{figures/delivery_distributions.pdf}{.80\textheight}{All delivery cities, ordered by pooled train and validation frequency. Each dataset is normalized separately, including cities absent from training.}
-
-\newpage
-\section{City composition and temporal shifts}
-\subsection*{City composition and new validation locations}
+\section{New cities in validation}
 Each endpoint role has 64 training cities and 72 validation cities. The eight names absent from the union of training endpoints are Allentown, Charlotte, Chicago, Jackson, Knoxville, Laredo, Norfolk and San Diego.
 
-The colored circles summarize validation restricted to known pickup and delivery cities; the temporal comparisons on the following pages use the same subset. Positions use the separate GeoNames city reference, rather than the displaced coordinates supplied with the freight records.
+The colored circles summarize validation restricted to known pickup and delivery cities; the daily-load comparison on the next page uses the same subset. Positions use the separate GeoNames city reference, rather than the displaced coordinates supplied with the freight records.
 \fig{figures/city_composition.pdf}{.51\textheight}{Circle area represents a city's share of all training pickup and delivery endpoints. Color shows the sum of pickup and delivery percentage changes in mean daily loads: red indicates growth, blue decline. Magenta stars identify the eight cities absent from both training endpoint roles.}
+The new cities are mostly within regions represented in training. Geographic features may help generalization, but this is not a guarantee of accuracy.
+
 For each endpoint role, growth is $(\text{validation loads/day}/\text{training loads/day}-1)\times100\%$. The color adds these two percentages; it is not the percentage change of their combined count. Counts use the full calendar length of each split, including days without loads for a city.
 
 New cities have zero training share and undefined percentage growth, so they receive fixed-size stars. Their presence is determined from the full validation set; the colored circles use validation restricted to known pickup and delivery cities. Marker areas encode training composition, not city population or geographic size.
 
 \newpage
-\subsection*{The jump in daily load counts}
+\section{The unexplained jump in daily loads}
 Train spans 304 days and validation 61. Mean sample count rises from 157.89 to 196.72 loads per day. Restricting validation to known pickup/delivery cities leaves 10,553 rows, or 173.00 per day. Novel cities explain part, but not all, of the sample-count gap.
 \fig{figures/daily_load_counts.pdf}{.43\textheight}{Daily dataset row counts for train, all validation and validation restricted to known endpoint cities. Thin, faint lines show daily counts; solid bold lines show trailing 7-calendar-day means, computed separately within each split. The dotted line marks the start of validation.}
 The known-city filter checks each endpoint's training role separately: both pickup and delivery must have appeared in the corresponding training column. The remaining gap is approximately 15 daily rows even after this restriction.
@@ -119,34 +99,20 @@ The known-city filter checks each endpoint's training role separately: both pick
 These are sampled records, not verified counts of the entire market. Higher sampling density alone does not prove an increase in real freight demand. The available data do not establish the cause of the remaining jump.
 
 \newpage
-\subsection*{Market, quote and price over time}
-The panels below compare market index, quote signal and observed price globally and for trips from/to Detroit. Validation is restricted to known endpoint cities; its actual prices are unavailable.
-\fig{figures/temporal_signals.pdf}{.55\textheight}{The three signals from EDA: global daily means, then trailing 7-calendar-day load-weighted means from and to Detroit, separately within each split. Market and quote use the left axis; posted rate uses the right. Quotes are dashed; faint Detroit points are individual market observations. Validation has no posted-rate curve.}
-The temporal panels expose market regimes and differences in the signals without establishing causation. The analysis does not show that new cities cause the market-index shift.
-
-\newpage
-\section{Geographic audit and routing choices}
+\section{Check what the coordinates represent}
 The dataset supplies one coordinate pair per named city, constant across endpoint roles and datasets. It does not reveal individual warehouse locations within a city. Against matched official city boundaries, 70 of 72 points lie outside their named municipality; 52 are more than 100 km outside.
 \fig{figures/city_boundaries.pdf}{.42\textheight}{Original supplied points and US Census named-city boundaries. Outside the named city does not mean outside every municipality, nor prove that a coordinate is incorrect.}
 Original coordinates remain model inputs. Road features use a separate GeoNames city reference with a documented Washington override: routing displaced supplied points would answer a different geographic question. References are not claimed to be real warehouse sites.
 References and directed route tables are saved with preprocessing. Inference needs no live routing API. Ambiguous city names use selected reference records; geographic matching remains an assumption. External data provenance is listed in the final appendix.
 
 \newpage
-\section{Feature engineering}
-The model uses 52 features, including three categorical columns: pickup, delivery and equipment. Load IDs, raw date metadata, targets and output fields are excluded.
-\par\noindent\begin{tabularx}{\linewidth}{lrY}
-\toprule Group & Count & Information \\
-\midrule Original predictors & 11 & Cities, equipment, supplied coordinates, distance, weight, market and quote. \\
-Cyclical time & 7 & Sine/cosine of weekday, within-month and within-year phase; weekend flag. \\
-Road routes & 5 & HERE miles/hours, road-to-air and input-to-road ratios, availability. \\
-Market decomposition & 16 & Trend, harmonic, expectation, derivatives, residual statistics and five regime coefficients. \\
-US holidays & 7 & Actual/observed flags, distance to adjacent holidays and nearby-day indicators. \\
-Historical city inputs & 6 & Endpoint shares, directional balance and destination/origin diversity. \\
-\bottomrule
-\end{tabularx}\par
-City aggregates use previous days only for training; the entire current day is excluded before updates. Test and validation use frozen training history. No target encoding or price-derived aggregate enters the predictors. Calendar holidays are known in advance; there is no raw elapsed-date feature.
-\fig{figures/routes.pdf}{.23\textheight}{Cached HERE truck geometries for Dallas--Houston, Detroit--Atlanta and Los Angeles--New York. Routing estimates are contemporary static references, not verified historical 2025 journeys.}
-Route distances and durations augment the supplied load inputs without replacing their original coordinate columns. Correlated distance features are interpreted jointly in the SHAP analysis later in the report.
+\section{Find missing signal: road distance and driving time}
+What useful information is missing, and how can I get it? Road distance and estimated driving time are natural candidates for freight pricing. I added them using HERE Matrix Routing, with cached route geometries for visual checks.
+\fig{figures/routes.pdf}{.38\textheight}{Example truck routes between the separate city reference points: Dallas--Houston, Detroit--Atlanta and Los Angeles--New York. Circles mark pickup; triangles mark delivery.}
+The features include road distance, driving time and ratios comparing road, straight-line and supplied distance. Original supplied coordinates remain separate model inputs.
+
+These are routing estimates, not verified historical 2025 journeys or confirmed warehouse-to-warehouse paths. They do not include loading or driver rest. The geographic reference and routing assumptions are saved with preprocessing.
+
 
 \newpage
 \section{Market-index decomposition}
@@ -193,28 +159,10 @@ The test model fits development only, using the CV-selected fixed tree count; it
 The holdout dates appeared in earlier experiments and were reserved retrospectively. Its score is informative, but not equivalent to a pristine one-time external evaluation. Fixed boundaries and this disclosure are retained throughout the report.
 
 \newpage
-\section{Optimization and selected parameters}
-The active Optuna study has 50 completed TPE trials, seed 42. Each trial trains on $\ln(y)$ with RMSE loss and log-RMSE early stopping after 100 rounds, up to 1,500 trees. Selection uses weighted original-scale MAPE.
+\section{Start with a baseline, then train CatBoost}
+The direct baseline is $\hat y=\text{quote\_signal}\times\text{distance}$, without a fitted multiplier or correction. It gives 21.028\% MAPE on the October test.
 
-Search covers depth 4--8; learning rate 0.02--0.15; L2 0.1--30; random strength 0.001--3; column sampling 0.4--1; borders 64/128/254; SymmetricTree, Depthwise and Lossguide; Newton/Gradient leaf estimation; 1--10 leaf iterations; and No/AnyImprovement backtracking. Leaf-size and leaf-count parameters are conditional on growth policy.
-\begin{center}
-\par\noindent\begin{tabularx}{\linewidth}{YrYr}
-\toprule Parameter & Value & Parameter & Value \\
-\midrule Depth & 6 & Learning rate & 0.0569703 \\
-L2 leaf regularization & 2.28909 & Random strength & 1.16862 \\
-Column sampling & 0.977059 & Global borders & 254 \\
-Growth policy & \multicolumn{1}{l}{SymmetricTree} & Leaf method & Newton \\
-Leaf iterations & 1 & Final trees & 285 \\
-\bottomrule
-\end{tabularx}\par
-\end{center}
-Backtracking is AnyImprovement. Fold stopping counts are 218, 285 and 427; their median, 285, fixes test and submission tree counts. Active-study trial 41 is selected. SQLite study names fingerprint prepared fold values and configuration.
-\fig{figures/distance_borders.pdf}{.26\textheight}{Extra quantization search for golden feature \code{distance}, with other settings fixed. The current pipeline selects 254; additional bins do not improve it.}
-\code{golden_features} accepts numeric column names and selects a separate border count for each, sequentially under the same objective. Only results from the current feature/data fingerprint are reported; earlier pipeline experiments are not mixed into this comparison.
-
-\newpage
-\section{Performance against the product baseline}
-The direct baseline is $\hat y=\text{quote\_signal}\times\text{distance}$, without a fitted multiplier or correction. Both methods are evaluated on identical rows.
+I then trained CatBoost on the natural logarithm of price and tuned its hyperparameters with Optuna. Selection uses the weighted three-fold MAPE; parameters, metrics and the final model are saved. The selected model gives 5.1119\% weighted CV MAPE and 5.5562\% test MAPE. Both methods are evaluated on identical rows.
 \fig{figures/catboost-cv-metrics.png}{.25\textheight}{CatBoost and the product baseline: MAE, RMSE and MAPE improve on every split.}
 \begin{center}\small
 \begin{tabular}{lrrrr}
@@ -229,7 +177,7 @@ October test & 5.556\% & 21.028\% & 115.648 & 411.320 \\
 Test median APE is 1.897\%, P90 APE is 4.624\%, and 97.939\% of loads are within 10\% of observed price. RMSE remains sensitive to large deviations. The next pages examine these cases without excluding them from headline metrics.
 
 \newpage
-\section{Residual diagnostics}
+\section{Investigate the worst predictions}
 Residual is $y-\hat y$: positive means underprediction. All test diagnostics use the development-only model, not the full-train submission model.
 \fig{figures/test-residuals.png}{.50\textheight}{Signed percentage errors, residual magnitude, actual versus predicted price and daily errors. Log and symmetric-log axes expose extremes without deleting rows.}
 Most predictions track actual rates closely, but extreme errors occur in both directions. Price-scale errors tend to grow with price; relative metrics therefore complement MAE and RMSE. Daily spikes may reflect a few loads rather than a uniform bias.
@@ -245,24 +193,8 @@ Severe underprediction & 16 & 70.756\% & 9.334\% \\
 \end{center}
 The 38 loads above 50\% APE are 1.74\% of rows but contribute 61.24\% of summed percentage errors. The 2.163\% ordinary-case metric is diagnostic, not an alternative overall score. Removing rows based on their test errors would bias evaluation; overall MAPE stays 5.556\%.
 
-\newpage
-\section{What distinguishes the largest errors?}
-All severe-error lanes were observed in development. Median historical lane frequency is about 14, comparable with ordinary cases. Weight, quote and route ratios overlap the rest of the data; unseen geography does not explain these particular errors.
-\fig{figures/test-outlier-comparison.png}{.29\textheight}{Severe-error targets separate above and below the ordinary price relationship, while predictions stay closer to it. Target-derived ratios are diagnostics only.}
-For each of the five worst cases, 20 approximate historical peers share equipment and are nearest in standardized distance, weight, quote and market inputs. Matching never uses targets or prediction errors; peers are not necessarily the same lane.
-\begin{center}\small
-\begin{tabular}{lrrrr}
-\toprule Load ID & Actual & Predicted & Peer median & APE \\
-\midrule TR-046400 & 123.32 & 657.79 & 852.36 & 433.40\% \\
-TR-046179 & 643.58 & 3,292.46 & 2,970.97 & 411.59\% \\
-TR-046174 & 880.13 & 4,404.34 & 4,282.88 & 400.42\% \\
-TR-046260 & 352.82 & 1,677.18 & 1,617.79 & 375.36\% \\
-TR-047504 & 880.04 & 4,167.31 & 4,185.07 & 373.54\% \\
-\bottomrule
-\end{tabular}\end{center}
-These actual prices are 14--22\% of approximate peer medians. Median actual/predicted is 0.248 for severe overprediction and 3.225 for severe underprediction. Their median quote signals, roughly 1.94--2.02, resemble ordinary cases at 1.99.
+The extreme prices also differ sharply from similar historical loads. Missing pricing information or target anomalies are plausible explanations, not established causes. Detailed peer comparisons are retained in the appendix.
 
-An unobserved pricing factor or target anomaly is plausible, not established. Small city/equipment enrichments do not prove a reliable input-based detection rule. The analysis neither establishes an irreducible error floor nor proves that 1\% MAPE is mathematically impossible.
 
 \newpage
 \section{SHAP interpretation of the final model}
@@ -270,13 +202,7 @@ Native CatBoost contributions explain raw model output:
 \[\ln(\hat y_i)=\phi_{0,i}+\sum_j\phi_{ij}.\]
 Positive values raise predicted log rate; negative values lower it. Explanations pass numerical additivity checks. Feature ranking uses all explained rows; points show a deterministic sample of up to 1,500 loads and the top 20 features.
 \fig{figures/shap-validation.png}{.62\textheight}{Full-train model explanations on supplied validation. Numeric colors indicate low-to-high values; categorical points are gray. No validation targets are needed.}
-Distance and route-duration effects agree with their predictive role. Correlated features should be read jointly. A small quote contribution does not prove that quote is useless or absent from interactions. Fold explanations follow in the appendix.
-
-\newpage
-\section{Decision paths for the five worst test loads}
-Paths explain the development-only model, accumulating contributions from expected log rate to each prediction. Features outside the top 20 are summed into one row, preserving additivity.
-\fig{figures/test-worst-five-shap.png}{.72\textheight}{Top circles mark predicted log prices and crosses mark actual log prices. Horizontal gaps are errors, not SHAP contributions. Targets are shown only for comparison.}
-The model reacts to route length, but these actual prices are far lower than predicted. SHAP explains model behavior; it does not establish why the observed price differs or prove that a target is wrong.
+Distance dominates the explanations, while road distance and driving time also contribute. SHAP describes model behavior; it does not prove that adding a feature improves held-out accuracy. Correlated features should be read jointly. A small quote contribution does not prove that quote is useless or absent from interactions. Fold explanations follow in the appendix.
 
 \newpage
 \section{Reconstructing the fixed December inputs}
@@ -305,6 +231,90 @@ The 5th/95th empirical quantiles of actual/predicted on 2,183 holdout loads give
 Coverage on that calibration sample is 89.922\%; this is not an independent coverage test. Transfer across models, periods and lanes is an assumption.
 
 The band excludes uncertainty in reconstructed market/quote values, the base market curve and geographic references. Input-uncertainty Monte Carlo propagation was discussed but not implemented. This band must not be labeled total uncertainty or a calibrated 90\% guarantee for the fixed lane.
+
+The weekly pattern is a model prediction conditional on these inputs, not a guarantee that certain weekdays are always cheaper. Next steps are to investigate unusual prices, obtain better shipment context and validate improvements on a fresh future period.
+
+
+\newpage
+\appendix
+\section{Equipment and date distributions}
+\fig{figures/equipment_date_distributions.pdf}{.60\textheight}{All equipment categories and the monthly date distribution. Percentages use each dataset's own row count. Dates show the chronological split, not a random partition.}
+The next two appendix pages show every pickup and delivery category, including validation-only cities. Together these plots cover all original predictors. \code{load_id} is a unique identifier and is excluded from modeling; its uniqueness is checked in the data-quality audit.
+
+\newpage
+\section{All pickup-city distributions}
+\fig{figures/pickup_distributions.pdf}{.80\textheight}{All pickup cities, ordered by pooled train and validation frequency. Each dataset is normalized separately; a missing bar denotes zero observations.}
+
+\newpage
+\section{All delivery-city distributions}
+\fig{figures/delivery_distributions.pdf}{.80\textheight}{All delivery cities, ordered by pooled train and validation frequency. Each dataset is normalized separately, including cities absent from training.}
+
+\newpage
+\section{Global and Detroit temporal signals}
+The panels below compare market index, quote signal and observed price globally and for trips from/to Detroit. Validation is restricted to known endpoint cities; its actual prices are unavailable.
+\fig{figures/temporal_signals.pdf}{.55\textheight}{The three signals from EDA: global daily means, then trailing 7-calendar-day load-weighted means from and to Detroit, separately within each split. Market and quote use the left axis; posted rate uses the right. Quotes are dashed; faint Detroit points are individual market observations. Validation has no posted-rate curve.}
+The temporal panels expose market regimes and differences in the signals without establishing causation. The analysis does not show that new cities cause the market-index shift.
+
+\newpage
+\section{Feature engineering}
+The model uses 52 features, including three categorical columns: pickup, delivery and equipment. Load IDs, raw date metadata, targets and output fields are excluded.
+\par\noindent\begin{tabularx}{\linewidth}{lrY}
+\toprule Group & Count & Information \\
+\midrule Original predictors & 11 & Cities, equipment, supplied coordinates, distance, weight, market and quote. \\
+Cyclical time & 7 & Sine/cosine of weekday, within-month and within-year phase; weekend flag. \\
+Road routes & 5 & HERE miles/hours, road-to-air and input-to-road ratios, availability. \\
+Market decomposition & 16 & Trend, harmonic, expectation, derivatives, residual statistics and five regime coefficients. \\
+US holidays & 7 & Actual/observed flags, distance to adjacent holidays and nearby-day indicators. \\
+Historical city inputs & 6 & Endpoint shares, directional balance and destination/origin diversity. \\
+\bottomrule
+\end{tabularx}\par
+City aggregates use previous days only for training; the entire current day is excluded before updates. Test and validation use frozen training history. No target encoding or price-derived aggregate enters the predictors. Calendar holidays are known in advance; there is no raw elapsed-date feature.
+Route distances and durations augment the supplied load inputs without replacing their original coordinate columns. Correlated distance features are interpreted jointly in the SHAP analysis later in the report.
+
+\newpage
+\section{Optimization and selected parameters}
+The active Optuna study has 50 completed TPE trials, seed 42. Each trial trains on $\ln(y)$ with RMSE loss and log-RMSE early stopping after 100 rounds, up to 1,500 trees. Selection uses weighted original-scale MAPE.
+
+Search covers depth 4--8; learning rate 0.02--0.15; L2 0.1--30; random strength 0.001--3; column sampling 0.4--1; borders 64/128/254; SymmetricTree, Depthwise and Lossguide; Newton/Gradient leaf estimation; 1--10 leaf iterations; and No/AnyImprovement backtracking. Leaf-size and leaf-count parameters are conditional on growth policy.
+\begin{center}
+\par\noindent\begin{tabularx}{\linewidth}{YrYr}
+\toprule Parameter & Value & Parameter & Value \\
+\midrule Depth & 6 & Learning rate & 0.0569703 \\
+L2 leaf regularization & 2.28909 & Random strength & 1.16862 \\
+Column sampling & 0.977059 & Global borders & 254 \\
+Growth policy & \multicolumn{1}{l}{SymmetricTree} & Leaf method & Newton \\
+Leaf iterations & 1 & Final trees & 285 \\
+\bottomrule
+\end{tabularx}\par
+\end{center}
+Backtracking is AnyImprovement. Fold stopping counts are 218, 285 and 427; their median, 285, fixes test and submission tree counts. Active-study trial 41 is selected. SQLite study names fingerprint prepared fold values and configuration.
+\fig{figures/distance_borders.pdf}{.26\textheight}{Extra quantization search for golden feature \code{distance}, with other settings fixed. The current pipeline selects 254; additional bins do not improve it.}
+\code{golden_features} accepts numeric column names and selects a separate border count for each, sequentially under the same objective. Only results from the current feature/data fingerprint are reported; earlier pipeline experiments are not mixed into this comparison.
+
+\newpage
+\section{What distinguishes the largest errors?}
+All severe-error lanes were observed in development. Median historical lane frequency is about 14, comparable with ordinary cases. Weight, quote and route ratios overlap the rest of the data; unseen geography does not explain these particular errors.
+\fig{figures/test-outlier-comparison.png}{.29\textheight}{Severe-error targets separate above and below the ordinary price relationship, while predictions stay closer to it. Target-derived ratios are diagnostics only.}
+For each of the five worst cases, 20 approximate historical peers share equipment and are nearest in standardized distance, weight, quote and market inputs. Matching never uses targets or prediction errors; peers are not necessarily the same lane.
+\begin{center}\small
+\begin{tabular}{lrrrr}
+\toprule Load ID & Actual & Predicted & Peer median & APE \\
+\midrule TR-046400 & 123.32 & 657.79 & 852.36 & 433.40\% \\
+TR-046179 & 643.58 & 3,292.46 & 2,970.97 & 411.59\% \\
+TR-046174 & 880.13 & 4,404.34 & 4,282.88 & 400.42\% \\
+TR-046260 & 352.82 & 1,677.18 & 1,617.79 & 375.36\% \\
+TR-047504 & 880.04 & 4,167.31 & 4,185.07 & 373.54\% \\
+\bottomrule
+\end{tabular}\end{center}
+These actual prices are 14--22\% of approximate peer medians. Median actual/predicted is 0.248 for severe overprediction and 3.225 for severe underprediction. Their median quote signals, roughly 1.94--2.02, resemble ordinary cases at 1.99.
+
+An unobserved pricing factor or target anomaly is plausible, not established. Small city/equipment enrichments do not prove a reliable input-based detection rule. The analysis neither establishes an irreducible error floor nor proves that 1\% MAPE is mathematically impossible.
+
+\newpage
+\section{Decision paths for the five worst test loads}
+Paths explain the development-only model, accumulating contributions from expected log rate to each prediction. Features outside the top 20 are summed into one row, preserving additivity.
+\fig{figures/test-worst-five-shap.png}{.72\textheight}{Top circles mark predicted log prices and crosses mark actual log prices. Horizontal gaps are errors, not SHAP contributions. Targets are shown only for comparison.}
+The model reacts to route length, but these actual prices are far lower than predicted. SHAP explains model behavior; it does not establish why the observed price differs or prove that a target is wrong.
 
 \newpage
 \section{Reproducibility, outputs and limitations}
@@ -341,10 +351,9 @@ pdflatex -interaction=nonstopmode freight_rate_report.tex
 \end{lstlisting}
 Use a notebook-capable environment; the verified runtime includes Jupyter/nbclient. Native-model reload checks preserve predictions. Saved versions: CatBoost 1.2.10, NumPy 2.1.3, pandas 2.3.3, scikit-learn 1.8.0. Evidence JSON includes source-artifact SHA-256 hashes.
 
-The scorer checks file contracts, not hidden validation accuracy. CV reuses selection windows; the holdout is retrospective; future market covariates are used; December inputs are reconstructed. These limits accompany the scores. GitHub publication and a 2--3 minute Loom walkthrough remain separate submission steps.
+The scorer checks file contracts, not hidden validation accuracy. CV reuses selection windows; the holdout is retrospective; future market covariates are used; December inputs are reconstructed. These limits accompany the scores. The repository contains the report and reproducible artifacts; the Loom walkthrough follows the main report pages.
 
 \newpage
-\appendix
 \section{Fold 1: held-out SHAP values}
 Training: January 1--March 15; validation: March 16--May 26. Imputation and residual statistics fit this fold's training rows; the market equation uses known future covariates. Fold MAPE is 6.200\%, with 218 trees.
 \fig{figures/shap-fold_1.png}{.69\textheight}{Fold 1 explanations on its validation rows, in log-rate units.}
