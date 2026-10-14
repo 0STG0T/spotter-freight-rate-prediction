@@ -6,7 +6,7 @@ Baseline: 2,183 rows, MAPE 5.5562%. 2,138 rows have APE <=10% (mean 2.1632%); 38
 
 Among severe errors, 22 are overpredictions: median actual/prediction 0.248 and mean APE 286.16%. Sixteen are underpredictions: median actual/prediction 3.225 and mean APE 70.76%. MAPE amplifies the cheap-price cases because it divides by the actual rate.
 
-All 38 severe cases have historical same-direction, same-equipment examples. Match up to five historical loads using distance, weight, quote and market (scaled by development IQR), then compare price per mile. The median actual/peer price-per-mile ratio is 0.238 for severe overpredictions and 3.185 for underpredictions. Peer samples are small and historical conditions can differ; these are comparisons, not counterfactual truth.
+All 38 severe cases have historical same-direction examples; 36 also have matching equipment (21 overpredictions and 15 underpredictions). The two unmatched equipment combinations are Syracuse to Raleigh / Flatbed and Corpus Christi to Las Vegas / Flatbed. Match up to five historical loads using distance, weight, quote and market (scaled by development IQR), then compare price per mile. The median actual/peer price-per-mile ratio is 0.238 for severe overpredictions and 3.185 for underpredictions. Peer samples are small and historical conditions can differ; these are comparisons, not counterfactual truth.
 
 The five worst cases have actual/peer ratios 0.192-0.212. Their weights and observed market/quote inputs do not exhibit a similarly large deviation. Severe cases occur throughout the holdout and across all equipment types. This supports investigating an unobserved pricing factor, special conditions or target anomalies; it does not prove random noise or corrupted labels.
 
