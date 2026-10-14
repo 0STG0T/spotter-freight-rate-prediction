@@ -92,6 +92,14 @@ Each endpoint role has 64 training cities and 72 validation cities. The eight na
 These are sampled records, not verified counts of the entire market. Higher sampling density alone does not prove an increase in real freight demand. City features therefore include normalized shares and directional imbalance. The temporal panels expose market regimes and differences in the signals without establishing causation. The analysis does not show that new cities cause the market-index shift.
 
 \newpage
+\subsection*{City composition and new validation locations}
+The map summarizes the same known-city validation subset used in the temporal comparison. Positions use the separate GeoNames city reference, rather than the displaced coordinates supplied with the freight records.
+\fig{figures/city_composition.pdf}{.51\textheight}{Circle area represents a city's share of all training pickup and delivery endpoints. Color shows the sum of pickup and delivery percentage changes in mean daily loads: red indicates growth, blue decline. Magenta stars identify the eight cities absent from both training endpoint roles.}
+For each endpoint role, growth is $(\text{validation loads/day}/\text{training loads/day}-1)\times100\%$. The color adds these two percentages; it is not the percentage change of their combined count. Counts use the full calendar length of each split, including days without loads for a city.
+
+New cities have zero training share and undefined percentage growth, so they receive fixed-size stars. Their presence is determined from the full validation set; the colored circles use validation restricted to known pickup and delivery cities. Marker areas encode training composition, not city population or geographic size.
+
+\newpage
 \section{Geographic audit and routing choices}
 The dataset supplies one coordinate pair per named city, constant across endpoint roles and datasets. It does not reveal individual warehouse locations within a city. Against matched official city boundaries, 70 of 72 points lie outside their named municipality; 52 are more than 100 km outside.
 \fig{figures/city_boundaries.pdf}{.42\textheight}{Original supplied points and US Census named-city boundaries. Outside the named city does not mean outside every municipality, nor prove that a coordinate is incorrect.}

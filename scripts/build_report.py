@@ -15,6 +15,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from matplotlib.collections import LineCollection
+from matplotlib.lines import Line2D
+from pyproj import Transformer
+from shapely.geometry import shape
+from shapely.ops import transform
 import numpy as np
 import pandas as pd
 import nbformat
@@ -112,6 +117,60 @@ fig.legend(handles + rate_handles, labels + rate_labels, loc='lower center', nco
            fontsize=8, frameon=False, bbox_to_anchor=(.5, .005))
 fig.subplots_adjust(left=.1, right=.88, top=.95, bottom=.16, hspace=.35)
 save(fig, 'temporal_signals')
+
+# Static version of the city-share / growth map in EDA; no web tiles required.
+cities = sorted(set(train.pickup) | set(train.delivery))
+train_days = len(pd.date_range(train.date.min(), train.date.max()))
+val_days = len(pd.date_range(val.date.min(), val.date.max()))
+city_train = pd.DataFrame({role: train[role].value_counts().reindex(cities, fill_value=0) / train_days
+                           for role in ['pickup', 'delivery']})
+city_val = pd.DataFrame({role: val.loc[known, role].value_counts().reindex(cities, fill_value=0) / val_days
+                         for role in ['pickup', 'delivery']})
+city_growth = (city_val / city_train.replace(0, np.nan) - 1) * 100
+coordinates = pd.read_csv(ROOT / 'data/city-coordinates.csv').set_index('city')
+map_data = coordinates.reindex(cities).copy()
+map_data['share'] = city_train.sum(axis=1) * train_days / (2 * len(train)) * 100
+map_data['growth'] = city_growth.sum(axis=1, min_count=2)
+if map_data[['latitude', 'longitude', 'growth']].isna().any().any():
+    raise ValueError('Missing city reference or growth component')
+projector = Transformer.from_crs('EPSG:4326', 'EPSG:5070', always_xy=True)
+state_lines = []
+for feature in json.loads((ROOT / 'data/us-state-outlines-2025.geojson').read_text())['features']:
+    geometry = transform(projector.transform, shape(feature['geometry'])).simplify(1500)
+    polygons = list(geometry.geoms) if geometry.geom_type == 'MultiPolygon' else [geometry]
+    state_lines.extend(np.asarray(polygon.exterior.coords) for polygon in polygons)
+fig, ax = plt.subplots(figsize=(7.2, 4.6))
+ax.add_collection(LineCollection(state_lines, colors='#bfc6cd', linewidths=.5, zorder=1))
+x, y = projector.transform(map_data.longitude.to_numpy(), map_data.latitude.to_numpy())
+limit = float(map_data.growth.abs().max())
+points = ax.scatter(x, y, s=map_data.share * 32, c=map_data.growth,
+                    cmap='RdBu_r', vmin=-limit, vmax=limit, alpha=.9,
+                    edgecolors='white', linewidths=.5, zorder=3)
+new_points = coordinates.reindex(new_cities)
+nx, ny = projector.transform(new_points.longitude.to_numpy(), new_points.latitude.to_numpy())
+ax.scatter(nx, ny, marker='*', s=105, color='#c026d3', edgecolors='white', linewidths=.5, zorder=4)
+for city, px, py in zip(new_cities, nx, ny):
+    offset = {'Allentown': (4, 9), 'Norfolk': (5, -10), 'Charlotte': (5, -12),
+              'Knoxville': (-40, -10), 'Jackson': (-30, -12)}.get(city, (5, 5))
+    ax.annotate(city, (px, py), xytext=offset, textcoords='offset points', fontsize=7,
+                color='#86198f', bbox=dict(facecolor='white', alpha=.75, edgecolor='none', pad=.5), zorder=5)
+all_x, all_y = np.r_[x, nx], np.r_[y, ny]
+ax.set_xlim(all_x.min()-170000, all_x.max()+170000)
+ax.set_ylim(all_y.min()-200000, all_y.max()+200000)
+ax.set_aspect('equal'); ax.set_axis_off()
+ax.set_title('City composition: training share and validation growth', fontsize=11)
+bar = fig.colorbar(points, ax=ax, fraction=.035, pad=.025, shrink=.75)
+bar.set_label('Pickup growth + delivery growth (%)', fontsize=8)
+bar.ax.tick_params(labelsize=8)
+handles = [Line2D([], [], marker='o', linestyle='none', markersize=np.sqrt(share*32),
+                  markerfacecolor='#b95b59', markeredgecolor='white', label=f'{share:g}% train share')
+           for share in [.5, 2, 5]]
+handles.append(Line2D([], [], marker='*', linestyle='none', markersize=11,
+                      markerfacecolor='#c026d3', markeredgecolor='white', label='New validation city'))
+ax.legend(handles=handles, loc='upper center', bbox_to_anchor=(.5, -.02), ncol=2,
+          fontsize=8, frameon=False)
+fig.subplots_adjust(left=.01, right=.91, top=.93, bottom=.17)
+save(fig, 'city_composition')
 
 # Current boundary audit and cached route geometry, rather than stale plot images.
 audit, boundaries = audit_city_boundaries({'train': train, 'validation': val}, ROOT / 'data/city-boundaries-2025.geojson')
