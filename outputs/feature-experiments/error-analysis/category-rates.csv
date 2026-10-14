@@ -1,0 +1,132 @@
+category,rows,severe,severe_pct,feature
+Dry Van,1221,18,1.4742014742014742,equipment
+Flatbed,428,8,1.8691588785046729,equipment
+Reefer,534,12,2.247191011235955,equipment
+Albany,37,0,0.0,pickup
+Albuquerque,28,1,3.5714285714285716,pickup
+Amarillo,41,1,2.4390243902439024,pickup
+Atlanta,59,3,5.084745762711864,pickup
+Austin,10,0,0.0,pickup
+Bakersfield,52,3,5.769230769230769,pickup
+Baltimore,24,0,0.0,pickup
+Baton Rouge,45,0,0.0,pickup
+Birmingham,20,0,0.0,pickup
+Boston,34,1,2.9411764705882355,pickup
+Buffalo,35,0,0.0,pickup
+Charleston,40,1,2.5,pickup
+Chattanooga,29,0,0.0,pickup
+Cincinnati,49,2,4.081632653061225,pickup
+Columbia,45,2,4.444444444444445,pickup
+Corpus Christi,32,2,6.25,pickup
+Dallas,9,0,0.0,pickup
+Dayton,27,0,0.0,pickup
+Detroit,21,0,0.0,pickup
+El Paso,30,0,0.0,pickup
+Fort Wayne,53,0,0.0,pickup
+Fresno,36,0,0.0,pickup
+Grand Rapids,42,1,2.380952380952381,pickup
+Green Bay,24,0,0.0,pickup
+Greensboro,46,0,0.0,pickup
+Harrisburg,26,0,0.0,pickup
+Hartford,61,3,4.918032786885246,pickup
+Houston,35,0,0.0,pickup
+Indianapolis,20,1,5.0,pickup
+Jacksonville,28,0,0.0,pickup
+Kansas City,36,1,2.7777777777777777,pickup
+Las Vegas,9,0,0.0,pickup
+Lexington,58,0,0.0,pickup
+Little Rock,17,1,5.882352941176471,pickup
+Los Angeles,46,2,4.3478260869565215,pickup
+Louisville,19,0,0.0,pickup
+Lubbock,36,0,0.0,pickup
+Madison,22,0,0.0,pickup
+Memphis,35,3,8.571428571428571,pickup
+Milwaukee,39,0,0.0,pickup
+Mobile,53,0,0.0,pickup
+Montgomery,47,0,0.0,pickup
+Nashville,33,0,0.0,pickup
+New Orleans,14,0,0.0,pickup
+New York,38,0,0.0,pickup
+Oklahoma City,57,0,0.0,pickup
+Philadelphia,50,2,4.0,pickup
+Phoenix,46,1,2.1739130434782608,pickup
+Providence,20,0,0.0,pickup
+Raleigh,26,1,3.8461538461538463,pickup
+Reno,41,0,0.0,pickup
+Richmond,62,0,0.0,pickup
+Salt Lake City,19,0,0.0,pickup
+San Antonio,39,0,0.0,pickup
+San Francisco,16,1,6.25,pickup
+Savannah,21,0,0.0,pickup
+Shreveport,43,0,0.0,pickup
+St. Louis,13,1,7.6923076923076925,pickup
+Syracuse,43,2,4.651162790697675,pickup
+Tampa,16,0,0.0,pickup
+Toledo,35,1,2.857142857142857,pickup
+Tucson,50,1,2.0,pickup
+Tulsa,31,0,0.0,pickup
+Washington,15,0,0.0,pickup
+Albany,35,0,0.0,delivery
+Albuquerque,34,1,2.9411764705882355,delivery
+Amarillo,39,0,0.0,delivery
+Atlanta,44,3,6.818181818181818,delivery
+Austin,17,0,0.0,delivery
+Bakersfield,53,1,1.8867924528301887,delivery
+Baltimore,28,1,3.5714285714285716,delivery
+Baton Rouge,59,1,1.694915254237288,delivery
+Birmingham,16,0,0.0,delivery
+Boston,21,0,0.0,delivery
+Buffalo,51,1,1.9607843137254901,delivery
+Charleston,42,0,0.0,delivery
+Chattanooga,25,0,0.0,delivery
+Cincinnati,42,1,2.380952380952381,delivery
+Columbia,47,2,4.25531914893617,delivery
+Corpus Christi,22,0,0.0,delivery
+Dallas,10,0,0.0,delivery
+Dayton,28,0,0.0,delivery
+Detroit,10,0,0.0,delivery
+El Paso,41,1,2.4390243902439024,delivery
+Fort Wayne,49,1,2.0408163265306123,delivery
+Fresno,29,0,0.0,delivery
+Grand Rapids,34,1,2.9411764705882355,delivery
+Green Bay,29,1,3.4482758620689653,delivery
+Greensboro,46,1,2.1739130434782608,delivery
+Harrisburg,22,0,0.0,delivery
+Hartford,51,0,0.0,delivery
+Houston,26,1,3.8461538461538463,delivery
+Indianapolis,26,0,0.0,delivery
+Jacksonville,40,0,0.0,delivery
+Kansas City,41,0,0.0,delivery
+Las Vegas,8,1,12.5,delivery
+Lexington,54,1,1.8518518518518519,delivery
+Little Rock,24,1,4.166666666666667,delivery
+Los Angeles,35,0,0.0,delivery
+Louisville,13,0,0.0,delivery
+Lubbock,30,0,0.0,delivery
+Madison,26,2,7.6923076923076925,delivery
+Memphis,52,1,1.9230769230769231,delivery
+Milwaukee,39,0,0.0,delivery
+Mobile,47,1,2.127659574468085,delivery
+Montgomery,42,1,2.380952380952381,delivery
+Nashville,40,1,2.5,delivery
+New Orleans,25,0,0.0,delivery
+New York,53,1,1.8867924528301887,delivery
+Oklahoma City,45,1,2.2222222222222223,delivery
+Philadelphia,40,1,2.5,delivery
+Phoenix,58,1,1.7241379310344827,delivery
+Providence,21,0,0.0,delivery
+Raleigh,32,1,3.125,delivery
+Reno,25,0,0.0,delivery
+Richmond,63,2,3.1746031746031744,delivery
+Salt Lake City,25,1,4.0,delivery
+San Antonio,48,0,0.0,delivery
+San Francisco,21,0,0.0,delivery
+Savannah,18,1,5.555555555555555,delivery
+Shreveport,50,1,2.0,delivery
+St. Louis,18,0,0.0,delivery
+Syracuse,40,0,0.0,delivery
+Tampa,28,0,0.0,delivery
+Toledo,25,0,0.0,delivery
+Tucson,44,2,4.545454545454546,delivery
+Tulsa,26,0,0.0,delivery
+Washington,11,0,0.0,delivery
