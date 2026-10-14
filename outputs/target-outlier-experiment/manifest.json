@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "baseline": null,
+    "rpm_mad_3": 3.0,
+    "rpm_mad_4": 4.0,
+    "rpm_mad_5": 5.0
+  },
+  "params": {
+    "depth": 6,
+    "learning_rate": 0.05697034299373627,
+    "l2_leaf_reg": 2.289085865020752,
+    "random_strength": 1.1686224937438965,
+    "rsm": 0.9770594835281372,
+    "border_count": 254,
+    "grow_policy": "SymmetricTree",
+    "leaf_estimation_method": "Newton",
+    "leaf_estimation_iterations": 1,
+    "leaf_estimation_backtracking": "AnyImprovement",
+    "random_seed": 42,
+    "iterations": 1500,
+    "loss_function": "RMSE",
+    "eval_metric": "RMSE",
+    "thread_count": 4,
+    "allow_writing_files": false,
+    "verbose": false,
+    "per_float_feature_quantization": [
+      "6:border_count=254"
+    ]
+  },
+  "selected_by_cv": "rpm_mad_5",
+  "weights": [
+    0.2,
+    0.3,
+    0.5
+  ],
+  "preprocessing": "All train covariates; fit model on retained targets",
+  "market_fit_scope": "Known train + validation market_index inputs; no rate targets",
+  "script_sha256": "d539d88d0616576abcf6bef0a88d8227d2cef268de8338ee4e4bf0fbb5c7f024",
+  "raw_train_sha256": "892980fd20bac7ac0ca4ec31d3981fca48d52dec88e4f02642ab955f1efb40fe"
+}

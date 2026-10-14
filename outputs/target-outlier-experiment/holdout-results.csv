@@ -1,0 +1,3 @@
+variant,rows,removed_train,MAPE_pct,median_APE_pct,trees,features
+baseline,2183,0,5.556215638950306,1.8967362361832718,285,52
+rpm_mad_5,2183,639,5.465828469205994,1.8769809432856333,299,52
