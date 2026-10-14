@@ -18,7 +18,6 @@ import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 import nbformat
-from catboost import CatBoostRegressor
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'notebooks'))
@@ -36,7 +35,6 @@ train = pd.read_csv(ROOT / 'data/train-test.csv', parse_dates=['date'])
 val = pd.read_csv(ROOT / 'data/validation.csv', parse_dates=['date'])
 meta = json.loads((ROOT / 'outputs/final-model/metadata.json').read_text())
 bundle = pickle.loads((ROOT / 'outputs/final-model/preprocessing.pkl').read_bytes())
-model = CatBoostRegressor().load_model(str(ROOT / 'outputs/final-model/model.cbm'))
 curve = bundle['feature_state']['market_encoder'].curve_model
 colors = {'train': '#2463a6', 'validation': '#218c65'}
 
@@ -118,13 +116,6 @@ axes[-1].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
 axes[0].legend(fontsize=8, ncol=3)
 save(fig, 'market_decomposition')
 
-importance = pd.Series(model.get_feature_importance(type='PredictionValuesChange'), index=meta['feature_columns'])
-fig, ax = plt.subplots(figsize=(7.2, 4), layout='constrained')
-importance.nlargest(15).sort_values().plot.barh(ax=ax, color='#2463a6')
-ax.set(title='Full-train model: PredictionValuesChange importance', xlabel='Normalized importance (all features sum to 100)')
-ax.grid(axis='x', alpha=.15)
-save(fig, 'feature_importance')
-
 borders = pd.read_csv(ROOT / 'outputs/golden-features-cv.csv')
 border_scores = borders.groupby('border_count').apply(lambda rows: np.array([.2,.3,.5]) @ rows.sort_values('fold').MAPE_pct, include_groups=False)
 fig, ax = plt.subplots(figsize=(7.2, 2.3), layout='constrained')
@@ -163,7 +154,7 @@ snapshot = dict(model_metadata=meta, missing=missing, new_cities=new_cities,
     boundary_audit=dict(cities=len(audit), inside=int(audit.inside_named_city.sum()),
                         outside_gt100=int(audit.distance_outside_city_km.gt(100).sum())),
     market_rmse=market_rmse, cv_metrics=cv.to_dict('records'), baseline_metrics=baseline.to_dict('records'),
-    distance_border_scores=border_scores.to_dict(), feature_importance=importance.sort_values(ascending=False).to_dict(),
+    distance_border_scores=border_scores.to_dict(),
     quote_fit={**quote_fit, 'origin': str(quote_fit['origin'].date())}, market_shift=market_shift,
     december_rates=dict(min=float(dec_predictions.predicted_rate.min()), max=float(dec_predictions.predicted_rate.max()),
                         mean=float(dec_predictions.predicted_rate.mean())),

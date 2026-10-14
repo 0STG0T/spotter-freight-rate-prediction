@@ -92,9 +92,8 @@ These are sampled records, not verified counts of the entire market. Higher samp
 \newpage
 \section{Geographic audit and routing choices}
 The dataset supplies one coordinate pair per named city, constant across endpoint roles and datasets. It does not reveal individual warehouse locations within a city. Against matched official city boundaries, 70 of 72 points lie outside their named municipality; 52 are more than 100 km outside.
-\fig{figures/city_boundaries.pdf}{.32\textheight}{Original supplied points and US Census named-city boundaries. Outside the named city does not mean outside every municipality, nor prove that a coordinate is incorrect.}
+\fig{figures/city_boundaries.pdf}{.42\textheight}{Original supplied points and US Census named-city boundaries. Outside the named city does not mean outside every municipality, nor prove that a coordinate is incorrect.}
 Original coordinates remain model inputs. Road features use a separate GeoNames city reference with a documented Washington override: routing displaced supplied points would answer a different geographic question. References are not claimed to be real warehouse sites.
-\fig{figures/routes.pdf}{.23\textheight}{Cached HERE truck geometries for Dallas--Houston, Detroit--Atlanta and Los Angeles--New York. Routing estimates are contemporary static references, not verified historical 2025 journeys.}
 References and directed route tables are saved with preprocessing. Inference needs no live routing API. Ambiguous city names use selected reference records; geographic matching remains an assumption. External data provenance is listed in the final appendix.
 
 \newpage
@@ -111,8 +110,8 @@ Historical city inputs & 6 & Endpoint shares, directional balance and destinatio
 \bottomrule
 \end{tabularx}\par
 City aggregates use previous days only for training; the entire current day is excluded before updates. Test and validation use frozen training history. No target encoding or price-derived aggregate enters the predictors. Calendar holidays are known in advance; there is no raw elapsed-date feature.
-\fig{figures/feature_importance.pdf}{.42\textheight}{Current native-model PredictionValuesChange importance, recalculated from the saved full-train model. All features sum to 100; the top 15 are displayed.}
-Distance-related inputs are strong predictors. Original distance and road-distance features are correlated, so attribution can be shared among them. Importance is neither a causal contribution nor evidence from a feature ablation. SHAP complements this ranking later in the report.
+\fig{figures/routes.pdf}{.23\textheight}{Cached HERE truck geometries for Dallas--Houston, Detroit--Atlanta and Los Angeles--New York. Routing estimates are contemporary static references, not verified historical 2025 journeys.}
+Route distances and durations augment the supplied load inputs without replacing their original coordinate columns. Correlated distance features are interpreted jointly in the SHAP analysis later in the report.
 
 \newpage
 \section{Market-index decomposition}
