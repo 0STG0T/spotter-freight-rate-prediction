@@ -114,6 +114,13 @@ def save_december_chart(december: pd.DataFrame, output: Path) -> None:
         color=color,
         alpha=0.08,
     )
+    minimum = december.loc[december.predicted_rate.idxmin()]
+    axis.scatter([minimum.date], [minimum.predicted_rate], color='#c43b45', s=65, zorder=5)
+    axis.annotate(f'Minimum: {minimum.date:%b %d}\n${minimum.predicted_rate:.2f}',
+                 xy=(minimum.date, minimum.predicted_rate), xytext=(-130, 60),
+                 textcoords='offset points', fontsize=10, color='#a12530',
+                 bbox=dict(boxstyle='round,pad=.35', fc='white', ec='#c43b45', alpha=.95),
+                 arrowprops=dict(arrowstyle='->', color='#c43b45'), zorder=6)
     axis.set_title("Candidate: December 2025 Predicted Load Rate", loc="left", fontsize=15, fontweight="bold", pad=12)
     axis.set_ylabel("Predicted rate ($)")
     axis.grid(axis="y", color="#D9E2E4", linewidth=0.8)

@@ -1373,6 +1373,13 @@ def plot_december_predictions(predictions: pd.DataFrame, calibration: dict):
                     label=f'Approx. {100 * calibration["nominal_coverage"]:.0f}% model-error interval')
     ax.plot(predictions.date, predictions.predicted_rate, color='#2463a6', marker='o', ms=3,
             lw=1.5, label='Predicted rate')
+    minimum = predictions.loc[predictions.predicted_rate.idxmin()]
+    ax.scatter([minimum.date], [minimum.predicted_rate], color='#c43b45', s=65, zorder=5)
+    ax.annotate(f'Minimum: {minimum.date:%b %d}\n${minimum.predicted_rate:.2f}',
+                 xy=(minimum.date, minimum.predicted_rate), xytext=(-130, 60),
+                 textcoords='offset points', fontsize=10, color='#a12530',
+                 bbox=dict(boxstyle='round,pad=.35', fc='white', ec='#c43b45', alpha=.95),
+                 arrowprops=dict(arrowstyle='->', color='#c43b45'), zorder=6)
     ax.set(title='December: Lexington → Fort Wayne | 360 miles | Dry Van | 32,000 lb',
            xlabel='Date; reconstructed-input uncertainty is not included', ylabel='Predicted rate')
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
