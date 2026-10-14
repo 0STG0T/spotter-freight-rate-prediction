@@ -59,20 +59,59 @@ save(fig, 'eda_distributions')
 
 known = val.pickup.isin(train.pickup) & val.delivery.isin(train.delivery)
 new_cities = sorted((set(val.pickup) | set(val.delivery)) - (set(train.pickup) | set(train.delivery)))
-fig, axes = plt.subplots(2, 1, figsize=(7.2, 5.2), layout='constrained')
-for name, frame, color in [('Train', train, '#2463a6'), ('Validation: all', val, '#218c65'),
-                            ('Validation: known cities', val.loc[known], '#d46b25')]:
-    counts = frame.groupby('date').size().reindex(pd.date_range(frame.date.min(), frame.date.max()), fill_value=0)
-    axes[0].plot(counts.index, counts, color=color, alpha=.25, lw=.7)
-    axes[0].plot(counts.index, counts.rolling(7, min_periods=1).mean(), color=color, lw=1.4, label=name)
-axes[0].set(title='Daily sample counts; bold lines are trailing 7-day means', ylabel='Rows / day')
-axes[0].legend(fontsize=8, ncol=1)
-axes[0].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
-shares = pd.DataFrame({name: frame.equipment.value_counts(normalize=True)*100 for name, frame in [('Train', train), ('Validation', val)]})
-shares.plot.bar(ax=axes[1], color=['#2463a6', '#218c65'], rot=0)
-axes[1].set(title='Equipment composition', ylabel='Rows (%)', xlabel='')
-for ax in axes: ax.grid(alpha=.15)
-save(fig, 'sampling_shift')
+# Match the temporal panels in eda.ipynb: daily means globally, load-weighted
+# trailing 7-calendar-day means for trips from and to Detroit, within each split.
+fig, axes = plt.subplots(3, 1, figsize=(7.2, 6.5), sharex=True)
+right_axes = [ax.twinx() for ax in axes]
+styles = {
+    ('market_index', 'train'): ('#2463a6', '-', 'Market index: train'),
+    ('market_index', 'validation'): ('#238b63', '-', 'Market index: validation'),
+    ('quote_signal', 'train'): ('#db7b2b', '--', 'Quote signal: train'),
+    ('quote_signal', 'validation'): ('#8b5cf6', '--', 'Quote signal: validation'),
+    ('posted_rate', 'train'): ('#c43b45', '-', 'Posted rate: train'),
+}
+left_values, right_values = [], []
+for row, city_column in enumerate([None, 'pickup', 'delivery']):
+    ax, right = axes[row], right_axes[row]
+    for name, frame in [('train', train), ('validation', val.loc[known])]:
+        trips = frame if city_column is None else frame.loc[frame[city_column].eq('Detroit')]
+        calendar = pd.date_range(frame.date.min(), frame.date.max())
+        for metric in ['market_index', 'quote_signal', 'posted_rate']:
+            if metric not in trips:
+                continue
+            daily_stats = trips.groupby('date')[metric].agg(['sum', 'count']).reindex(calendar)
+            if row == 0:
+                values = daily_stats['sum'] / daily_stats['count'].replace(0, np.nan)
+            else:
+                values = (daily_stats['sum'].fillna(0).rolling(7, min_periods=1).sum()
+                          / daily_stats['count'].fillna(0).rolling(7, min_periods=1).sum().replace(0, np.nan))
+            color, dash, label = styles[(metric, name)]
+            target_ax = right if metric == 'posted_rate' else ax
+            target_ax.plot(calendar, values, color=color, linestyle=dash, lw=1.05, label=label)
+            (right_values if metric == 'posted_rate' else left_values).extend(values.dropna().tolist())
+        if row > 0:
+            ax.scatter(trips.date, trips.market_index, s=3, alpha=.10,
+                       color=styles[('market_index', name)][0], edgecolors='none')
+    ax.axvline(val.date.min(), color='#777777', lw=.8, linestyle=':')
+    ax.axvspan(val.date.min(), val.date.max(), color='#238b63', alpha=.035)
+    ax.set_ylabel('Market / quote', fontsize=9)
+    right.set_ylabel('Posted rate (USD)', fontsize=9)
+    right.spines['right'].set_visible(True)
+    ax.grid(alpha=.15)
+for ax, right, title in zip(axes, right_axes, ['All loads: daily means',
+                                            'From Detroit: 7-day load-weighted means',
+                                            'To Detroit: 7-day load-weighted means']):
+    ax.set_title(title, fontsize=10)
+    ax.set_ylim(min(left_values) * .9, max(left_values) * 1.06)
+    right.set_ylim(0, max(right_values) * 1.1)
+axes[-1].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+axes[-1].set_xlabel('2025; shaded period = known-city validation', fontsize=9)
+handles, labels = axes[0].get_legend_handles_labels()
+rate_handles, rate_labels = right_axes[0].get_legend_handles_labels()
+fig.legend(handles + rate_handles, labels + rate_labels, loc='lower center', ncol=2,
+           fontsize=8, frameon=False, bbox_to_anchor=(.5, .005))
+fig.subplots_adjust(left=.1, right=.88, top=.95, bottom=.16, hspace=.35)
+save(fig, 'temporal_signals')
 
 # Current boundary audit and cached route geometry, rather than stale plot images.
 audit, boundaries = audit_city_boundaries({'train': train, 'validation': val}, ROOT / 'data/city-boundaries-2025.geojson')

@@ -82,12 +82,14 @@ Nonpositive weights become missing. Weight and market medians fit only the corre
 The training target spans 57.22--25,533.00, with median 2,030.76; its long tail motivates log-target fitting. Distance medians barely change: 953.3 versus 953.6 miles. Quote medians are 2.056 versus 2.051. Mean market index changes from 1.083 in train to 0.927 in validation, motivating explicit analysis of the market process rather than assuming identical distributions.
 
 \newpage
-\section{Sampling density and new cities}
+\section{Temporal signals and sampling shift}
+The panels below compare market index, quote signal and observed price globally and for trips from/to Detroit. Validation is restricted to known endpoint cities; its actual prices are unavailable.
+
 Train spans 304 days and validation 61. Mean sample count rises from 157.89 to 196.72 loads per day. Restricting validation to known pickup/delivery cities leaves 10,553 rows, or 173.00 per day. Novel cities explain part, but not all, of the sample-count gap.
-\fig{figures/sampling_shift.pdf}{.52\textheight}{Daily row counts and equipment proportions. Bold curves are trailing 7-day means; faint curves show daily values. Equipment mix is broadly comparable across periods.}
+\fig{figures/temporal_signals.pdf}{.55\textheight}{The three signals from EDA: global daily means, then trailing 7-calendar-day load-weighted means from and to Detroit, separately within each split. Market and quote use the left axis; posted rate uses the right. Quotes are dashed; faint Detroit points are individual market observations. Validation has no posted-rate curve.}
 Each endpoint role has 64 training cities and 72 validation cities. The eight names absent from the union of training endpoints are Allentown, Charlotte, Chicago, Jackson, Knoxville, Laredo, Norfolk and San Diego. The known-city filter checks each endpoint's training role separately.
 
-These are sampled records, not verified counts of the entire market. Higher sampling density alone does not prove an increase in real freight demand. City features therefore include normalized shares and directional imbalance. The market-index shift is examined separately; the analysis does not establish that new cities cause it.
+These are sampled records, not verified counts of the entire market. Higher sampling density alone does not prove an increase in real freight demand. City features therefore include normalized shares and directional imbalance. The temporal panels expose market regimes and differences in the signals without establishing causation. The analysis does not show that new cities cause the market-index shift.
 
 \newpage
 \section{Geographic audit and routing choices}
