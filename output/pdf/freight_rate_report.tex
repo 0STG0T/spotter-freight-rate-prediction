@@ -83,16 +83,23 @@ The training target spans 57.22--25,533.00, with median 2,030.76; its long tail 
 
 \newpage
 \section{Temporal signals and sampling shift}
-The panels below compare market index, quote signal and observed price globally and for trips from/to Detroit. Validation is restricted to known endpoint cities; its actual prices are unavailable.
-
+\subsection*{The jump in daily load counts}
 Train spans 304 days and validation 61. Mean sample count rises from 157.89 to 196.72 loads per day. Restricting validation to known pickup/delivery cities leaves 10,553 rows, or 173.00 per day. Novel cities explain part, but not all, of the sample-count gap.
-\fig{figures/temporal_signals.pdf}{.55\textheight}{The three signals from EDA: global daily means, then trailing 7-calendar-day load-weighted means from and to Detroit, separately within each split. Market and quote use the left axis; posted rate uses the right. Quotes are dashed; faint Detroit points are individual market observations. Validation has no posted-rate curve.}
-Each endpoint role has 64 training cities and 72 validation cities. The eight names absent from the union of training endpoints are Allentown, Charlotte, Chicago, Jackson, Knoxville, Laredo, Norfolk and San Diego. The known-city filter checks each endpoint's training role separately.
+\fig{figures/daily_load_counts.pdf}{.43\textheight}{Daily dataset row counts for train, all validation and validation restricted to known endpoint cities. Thin, faint lines show daily counts; solid bold lines show trailing 7-calendar-day means, computed separately within each split. The dotted line marks the start of validation.}
+The known-city filter checks each endpoint's training role separately: both pickup and delivery must have appeared in the corresponding training column. The remaining gap is approximately 15 daily rows even after this restriction.
 
-These are sampled records, not verified counts of the entire market. Higher sampling density alone does not prove an increase in real freight demand. City features therefore include normalized shares and directional imbalance. The temporal panels expose market regimes and differences in the signals without establishing causation. The analysis does not show that new cities cause the market-index shift.
+These are sampled records, not verified counts of the entire market. Higher sampling density alone does not prove an increase in real freight demand. The available data do not establish the cause of the remaining jump.
+
+\newpage
+\subsection*{Market, quote and price over time}
+The panels below compare market index, quote signal and observed price globally and for trips from/to Detroit. Validation is restricted to known endpoint cities; its actual prices are unavailable.
+\fig{figures/temporal_signals.pdf}{.55\textheight}{The three signals from EDA: global daily means, then trailing 7-calendar-day load-weighted means from and to Detroit, separately within each split. Market and quote use the left axis; posted rate uses the right. Quotes are dashed; faint Detroit points are individual market observations. Validation has no posted-rate curve.}
+The temporal panels expose market regimes and differences in the signals without establishing causation. The analysis does not show that new cities cause the market-index shift.
 
 \newpage
 \subsection*{City composition and new validation locations}
+Each endpoint role has 64 training cities and 72 validation cities. The eight names absent from the union of training endpoints are Allentown, Charlotte, Chicago, Jackson, Knoxville, Laredo, Norfolk and San Diego.
+
 The map summarizes the same known-city validation subset used in the temporal comparison. Positions use the separate GeoNames city reference, rather than the displaced coordinates supplied with the freight records.
 \fig{figures/city_composition.pdf}{.51\textheight}{Circle area represents a city's share of all training pickup and delivery endpoints. Color shows the sum of pickup and delivery percentage changes in mean daily loads: red indicates growth, blue decline. Magenta stars identify the eight cities absent from both training endpoint roles.}
 For each endpoint role, growth is $(\text{validation loads/day}/\text{training loads/day}-1)\times100\%$. The color adds these two percentages; it is not the percentage change of their combined count. Counts use the full calendar length of each split, including days without loads for a city.

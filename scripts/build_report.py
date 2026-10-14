@@ -64,6 +64,24 @@ save(fig, 'eda_distributions')
 
 known = val.pickup.isin(train.pickup) & val.delivery.isin(train.delivery)
 new_cities = sorted((set(val.pickup) | set(val.delivery)) - (set(train.pickup) | set(train.delivery)))
+# Daily sampling jump: retain all three populations and smooth each split separately.
+fig, ax = plt.subplots(figsize=(7.2, 3.7), layout='constrained')
+for name, frame, color in [('Train', train, '#2463a6'),
+                            ('Validation: all', val, '#218c65'),
+                            ('Validation: known cities', val.loc[known], '#d46b25')]:
+    calendar = pd.date_range(frame.date.min(), frame.date.max())
+    counts = frame.groupby('date').size().reindex(calendar, fill_value=0)
+    ax.plot(calendar, counts, color=color, alpha=.24, lw=.6)
+    ax.plot(calendar, counts.rolling(7, min_periods=1).mean(),
+            color=color, lw=1.35, linestyle='-', label=name)
+ax.axvline(val.date.min(), color='#777777', linestyle=':', lw=.8)
+ax.set(title='Daily load counts: the train-to-validation jump',
+       ylabel='Dataset rows per day', xlabel='2025')
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+ax.legend(loc='upper left', fontsize=8)
+ax.grid(alpha=.15)
+save(fig, 'daily_load_counts')
+
 # Match the temporal panels in eda.ipynb: daily means globally, load-weighted
 # trailing 7-calendar-day means for trips from and to Detroit, within each split.
 fig, axes = plt.subplots(3, 1, figsize=(7.2, 6.5), sharex=True)
