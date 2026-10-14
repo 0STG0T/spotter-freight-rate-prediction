@@ -48,19 +48,60 @@ def save(fig, name):
     fig.savefig(FIG / f'{name}.png', dpi=170, bbox_inches='tight')
     plt.close(fig)
 
-fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.4), layout='constrained')
-for ax, col, label in zip(axes.flat, ['distance', 'weight', 'market_index', 'quote_signal'],
-                          ['Distance (miles)', 'Weight (lb)', 'Market index', 'Quote signal']):
+# Target first: identical observations, before and after the natural logarithm.
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.8), layout='constrained')
+for ax, values, label in [(axes[0], train.posted_rate, 'Posted rate (USD)'),
+                           (axes[1], np.log(train.posted_rate), 'ln(posted rate)')]:
+    ax.hist(values, bins=60, weights=np.full(len(values), 100/len(values)), color=colors['train'], alpha=.8)
+    ax.set(xlabel=label, ylabel='Training rows (%)')
+    ax.grid(alpha=.15)
+axes[0].set_title('Original target'); axes[1].set_title('Log-transformed target')
+save(fig, 'target_distributions')
+
+numeric_columns = [c for c in train.select_dtypes(include='number').columns if c != 'posted_rate']
+assert len(numeric_columns) == 8
+fig, axes = plt.subplots(4, 2, figsize=(7.2, 8.7), layout='constrained')
+for ax, col in zip(axes.flat, numeric_columns):
     all_values = pd.concat([train[col], val[col]]).dropna()
     bins = np.linspace(all_values.min(), all_values.max(), 40)
     for name, frame in [('train', train), ('validation', val)]:
         x = frame[col].dropna()
         ax.hist(x, bins=bins, weights=np.ones(len(x))/len(x)*100, histtype='step',
-                lw=1.4, label=name, color=colors[name])
-    ax.set(xlabel=label, ylabel='Nonmissing rows (%)')
+                lw=1.2, label=name, color=colors[name])
+    ax.set(xlabel=col, ylabel='Nonmissing rows (%)')
     ax.grid(alpha=.15)
-axes[0, 0].legend()
+axes[0, 0].legend(fontsize=8)
 save(fig, 'eda_distributions')
+
+fig, axes = plt.subplots(2, 1, figsize=(7.2, 5.5), layout='constrained')
+shares = pd.DataFrame({name: frame.equipment.value_counts(normalize=True)*100
+                       for name,frame in [('train',train),('validation',val)]}).fillna(0)
+shares.plot.bar(ax=axes[0], color=list(colors.values()), rot=0)
+axes[0].set(title='Equipment', ylabel='Dataset rows (%)', xlabel='')
+for name,frame in [('train',train),('validation',val)]:
+    counts = frame.groupby(frame.date.dt.month).size().reindex(range(1,13),fill_value=0)
+    axes[1].bar(np.arange(1,13)+(-.18 if name=='train' else .18),counts/len(frame)*100,
+                width=.36,color=colors[name],label=name)
+axes[1].set(title='Date: monthly distribution',ylabel='Dataset rows (%)',xlabel='Month in 2025')
+axes[1].set_xticks(range(1,13)); axes[1].legend()
+for ax in axes: ax.grid(axis='y',alpha=.15)
+save(fig,'equipment_date_distributions')
+
+# Every city, including validation-only names; consistent ordering by pooled count.
+for role in ['pickup','delivery']:
+    ordered = pd.concat([train[role],val[role]]).value_counts().index
+    shares = pd.DataFrame({name:frame[role].value_counts(normalize=True).reindex(ordered,fill_value=0)*100
+                           for name,frame in [('train',train),('validation',val)]})
+    fig, axes = plt.subplots(1,2,figsize=(7.2,8.8),layout='constrained',sharex=True)
+    for ax,part in zip(axes,np.array_split(np.arange(len(shares)),2)):
+        data=shares.iloc[part]; y=np.arange(len(data))
+        ax.barh(y-.17,data.train,height=.32,color=colors['train'],label='train')
+        ax.barh(y+.17,data.validation,height=.32,color=colors['validation'],label='validation')
+        ax.set_yticks(y,data.index,fontsize=7); ax.invert_yaxis()
+        ax.set_xlabel('Dataset rows (%)'); ax.grid(axis='x',alpha=.15)
+    axes[0].legend(fontsize=8,loc='lower right')
+    fig.suptitle(f'{role.title()} city: all {len(shares)} categories',fontsize=11)
+    save(fig,f'{role}_distributions')
 
 known = val.pickup.isin(train.pickup) & val.delivery.isin(train.delivery)
 new_cities = sorted((set(val.pickup) | set(val.delivery)) - (set(train.pickup) | set(train.delivery)))

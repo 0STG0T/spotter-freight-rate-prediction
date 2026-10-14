@@ -66,6 +66,9 @@ Validation targets are hidden, so their accuracy cannot be measured locally. The
 
 \newpage
 \section{Data quality before modeling}
+\fig{figures/target_distributions.pdf}{.25\textheight}{The same 48,000 training targets before and after the natural logarithm. No values are clipped or removed. Validation targets are unavailable.}
+The training target spans 57.22--25,533.00 USD, with median 2,030.76. The long right tail motivates modeling $\ln(\text{posted rate})$; predictions are mapped back with the exponential. Log transformation compresses the scale without deleting extreme prices.
+
 Train and validation have no duplicate load IDs or duplicate complete rows. Distances, quote signals and training targets are positive and finite. Weight and market index require cleaning. Empty prediction-template columns are expected outputs, not missing predictors.
 \begin{center}
 \par\noindent\begin{tabularx}{\linewidth}{Yrr}
@@ -78,8 +81,23 @@ Duplicate load IDs & 0 & 0 \\
 \end{tabularx}\par
 \end{center}
 Nonpositive weights become missing. Weight and market medians fit only the corresponding training partition, including within CV folds. Cleaning preserves row order, IDs and supplied coordinate fields. No target outliers are deleted.
-\fig{figures/eda_distributions.pdf}{.49\textheight}{Selected raw numerical distributions, independently normalized by dataset. Negative weights are visible before cleaning. Missing values are excluded from histograms, not hidden in the audit.}
-The training target spans 57.22--25,533.00, with median 2,030.76; its long tail motivates log-target fitting. Distance medians barely change: 953.3 versus 953.6 miles. Quote medians are 2.056 versus 2.051. Mean market index changes from 1.083 in train to 0.927 in validation, motivating explicit analysis of the market process rather than assuming identical distributions.
+\newpage
+\subsection*{All original numerical predictors}
+\fig{figures/eda_distributions.pdf}{.77\textheight}{All eight raw numerical predictors, with common bins and independently normalized distributions for train and validation. Missing values are excluded from histograms and reported in the preceding audit; nonpositive weights remain visible before cleaning.}
+Distance medians are 953.3 versus 953.6 miles; quote medians are 2.056 versus 2.051. Mean market index changes from 1.083 in train to 0.927 in validation.
+
+\newpage
+\subsection*{Equipment and date}
+\fig{figures/equipment_date_distributions.pdf}{.60\textheight}{All equipment categories and the monthly date distribution. Percentages use each dataset's own row count. Dates show the chronological split, not a random partition.}
+The following pages show every pickup and delivery category, including validation-only cities. Together these plots cover all original predictors. \code{load_id} is a unique identifier and is excluded from modeling; its uniqueness is checked in the data-quality audit. Engineered features are discussed later.
+
+\newpage
+\subsection*{Pickup city distribution}
+\fig{figures/pickup_distributions.pdf}{.80\textheight}{All pickup cities, ordered by pooled train and validation frequency. Each dataset is normalized separately; a missing bar denotes zero observations.}
+
+\newpage
+\subsection*{Delivery city distribution}
+\fig{figures/delivery_distributions.pdf}{.80\textheight}{All delivery cities, ordered by pooled train and validation frequency. Each dataset is normalized separately, including cities absent from training.}
 
 \newpage
 \section{Temporal signals and sampling shift}
