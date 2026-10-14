@@ -1,0 +1,77 @@
+{
+  "selected_by_cv": "baseline",
+  "weights": [
+    0.2,
+    0.3,
+    0.5
+  ],
+  "params": {
+    "depth": 6,
+    "learning_rate": 0.05697034299373627,
+    "l2_leaf_reg": 2.289085865020752,
+    "random_strength": 1.1686224937438965,
+    "rsm": 0.9770594835281372,
+    "border_count": 254,
+    "grow_policy": "SymmetricTree",
+    "leaf_estimation_method": "Newton",
+    "leaf_estimation_iterations": 1,
+    "leaf_estimation_backtracking": "AnyImprovement",
+    "random_seed": 42,
+    "iterations": 1500,
+    "loss_function": "RMSE",
+    "eval_metric": "RMSE",
+    "thread_count": 4,
+    "allow_writing_files": false,
+    "verbose": false,
+    "per_float_feature_quantization": [
+      "6:border_count=254"
+    ]
+  },
+  "market_fit_scope": "Known train + validation market_index inputs; no rate targets",
+  "holdout_start": "2025-10-18",
+  "feature_groups": {
+    "baseline": [],
+    "quote_interactions": [
+      "quote_interactions"
+    ],
+    "route_load": [
+      "route_load"
+    ],
+    "direction": [
+      "direction"
+    ],
+    "city_pricing": [
+      "city_pricing"
+    ],
+    "lane_pricing": [
+      "lane_pricing"
+    ],
+    "all": [
+      "quote_interactions",
+      "route_load",
+      "direction",
+      "city_pricing",
+      "lane_pricing"
+    ],
+    "weight_per_mile": [
+      "weight_per_mile"
+    ],
+    "ton_miles": [
+      "ton_miles"
+    ],
+    "road_speed": [
+      "road_speed"
+    ],
+    "extra_road_miles": [
+      "extra_road_miles"
+    ],
+    "weight_capacity_fraction": [
+      "weight_capacity_fraction"
+    ],
+    "quote_total_only": [
+      "quote_total_only"
+    ]
+  },
+  "source_sha256": "47c054c578a7600da8a811e1842153c0edff2e2d656b98b020565b2c76954286",
+  "note": "Fixed incumbent parameters; feature ablation, not retuning. Production artifacts unchanged."
+}
