@@ -105,6 +105,24 @@ for role in ['pickup','delivery']:
 
 known = val.pickup.isin(train.pickup) & val.delivery.isin(train.delivery)
 new_cities = sorted((set(val.pickup) | set(val.delivery)) - (set(train.pickup) | set(train.delivery)))
+# Dedicated daily validation forecast, joined by ID rather than row position.
+validation_predictions = pd.read_csv(ROOT / 'outputs/validation-predictions.csv')
+validation_rates = val[['load_id', 'date']].merge(validation_predictions, on='load_id',
+                                                how='left', validate='one_to_one')
+assert len(validation_rates) == 12000 and validation_rates.predicted_rate.notna().all()
+assert set(validation_predictions.load_id) == set(val.load_id)
+daily_validation = validation_rates.groupby('date').predicted_rate.mean()
+fig, ax = plt.subplots(figsize=(7.2, 3.8), layout='constrained')
+ax.plot(daily_validation.index, daily_validation.values, color='#2463a6',
+        marker='o', ms=2.5, lw=1.5, label='Daily mean prediction')
+ax.set(title='Validation: average predicted freight rate by day',
+       xlabel='Date (2025)', ylabel='Mean predicted rate (USD)')
+ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+ax.tick_params(axis='x', labelrotation=30)
+ax.grid(alpha=.2)
+save(fig, 'validation_daily_mean')
+
 # Daily sampling jump: retain all three populations and smooth each split separately.
 fig, ax = plt.subplots(figsize=(7.2, 3.7), layout='constrained')
 for name, frame, color in [('Train', train, '#2463a6'),

@@ -314,6 +314,12 @@ All 12,000 validation loads use the full-train model. Actual prices are unavaila
 \fig{figures/inference-predictions.png}{.49\textheight}{Validation predicted-price distribution, daily mean and P10--P90 across loads, distance dependence and equipment groups. Across-load spread is not an interval for one load.}
 
 \newpage
+\subsection*{Average validation prediction over time}
+For each date, the chart averages the saved full-train model predictions across all validation loads on that day. It covers November 1--December 31, 2025, before defining the separate fixed-load December scenario.
+\fig{figures/validation_daily_mean.pdf}{.46\textheight}{Daily arithmetic mean of predicted freight rates across the supplied validation loads. Predictions are matched to dates by load ID; all 12,000 loads are included. No smoothing is applied.}
+Changes reflect both model predictions and the daily mix of routes, distances, equipment and weights. This is not a fixed-route price index. Actual validation prices are unavailable, so the graph describes predictions rather than forecast accuracy.
+
+\newpage
 \subsection*{December input reconstruction}
 The prescribed load is Lexington to Fort Wayne, 360 miles, Dry Van, 32,000 lb. Dates are supplied; coordinates, quote and market are absent. Unique source city coordinates are Lexington $(36.99152,-84.99876)$ and Fort Wayne $(41.31561,-85.36206)$. Routing references remain separate.
 
